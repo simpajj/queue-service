@@ -1,6 +1,8 @@
 package com.simonsalloum.service;
 
-/*public class SqsQueueService implements QueueService {
+import com.amazonaws.services.sqs.AmazonSQSClient;
+
+public class SqsQueueService implements QueueService<QueueServiceRecord, QueueServiceResponse> {
   //
   // Task 4: Optionally implement parts of me.
   //
@@ -11,4 +13,19 @@ package com.simonsalloum.service;
 
   public SqsQueueService(AmazonSQSClient sqsClient) {
   }
-}*/
+
+  @Override
+  public QueueServiceResponse push(QueueServiceRecord record) {
+    return null;
+  }
+
+  @Override
+  public QueueServiceResponse pull() {
+    return null;
+  }
+
+  @Override
+  public void delete(QueueServiceRecord record) {
+
+  }
+}

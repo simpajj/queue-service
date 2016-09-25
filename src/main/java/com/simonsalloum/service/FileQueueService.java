@@ -1,7 +1,18 @@
 package com.simonsalloum.service;
 
-/*public class FileQueueService implements QueueService {
-  //
-  // Task 3: Implement me if you have time.
-  //
-}*/
+public class FileQueueService implements QueueService<QueueServiceRecord, QueueServiceResponse> {
+    @Override
+    public QueueServiceResponse push(QueueServiceRecord record) {
+        return null;
+    }
+
+    @Override
+    public QueueServiceResponse pull() {
+        return null;
+    }
+
+    @Override
+    public void delete(QueueServiceRecord record) {
+
+    }
+}
