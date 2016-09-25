@@ -41,6 +41,6 @@ public class QueueServiceRecord {
      */
     @Override
     public String toString() {
-        return "UUID: " + uuid + "\n" + "Value: " + value;
+        return this.getClass().getSimpleName() + "[uuid=" + uuid + ", " + "value=" + value + "]";
     }
 }

@@ -60,8 +60,13 @@ public class QueueServiceResponse {
     @Override
     public String toString() {
         if (queueServiceRecord != null)
-            return "QueueServiceResponseCode: " + getResponseCode().toString() + ", " + getResponseCode().getCode() + "\n" + "Record: \n" + getQueueServiceRecord().toString();
+            return this.getClass().getSimpleName() + "[" +
+                    "responseCode=" + getResponseCode().toString() + ", " +
+                    "queueServiceRecord=" + getQueueServiceRecord().toString() +
+                    "]";
         else
-            return "QueueServiceResponseCode: " + getResponseCode().toString();
+            return this.getClass().getSimpleName() + "[" +
+                    "responseCode=" + getResponseCode().toString() +
+                    "]";
     }
 }
