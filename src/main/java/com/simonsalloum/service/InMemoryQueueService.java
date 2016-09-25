@@ -12,11 +12,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * An in-memory queue service implementing the
- * {@link com.simonsalloum.service.QueueService} interface for pushing and
- * pulling records to and from it. This queue service uses a
- * {@link ConcurrentLinkedQueue}, which is unbounded, to store records
- * in memory for consumption, as well as a {@link com.google.common.cache.Cache}
+ * An in-memory queue service implementing the {@link QueueService}
+ * interface for pushing and pulling records to and from it. This
+ * queue service uses a {@link ConcurrentLinkedQueue}, which is unbounded,
+ * to store records in memory for consumption, as well as a {@link Cache}
  * for intermediate storage of retrieved records. Each entry in the cache is
  * automatically evicted after a configurable amount of time.
  *
@@ -25,15 +24,12 @@ import java.util.logging.Logger;
  * implementations of {@link com.simonsalloum.client.Producer} and
  * {@link com.simonsalloum.client.Consumer} respectively.
  *
- * The queue is designed to accept records of type
- * {@link com.simonsalloum.service.QueueServiceRecord} and to respond
- * with {@link com.simonsalloum.service.QueueServiceResponse}.
+ * The queue is designed to accept records of type {@link QueueServiceRecord}
+ * and to respond with a {@link QueueServiceResponse}.
  *
  * @author simon.salloum
  */
 
-// TODO: make the class generic and push out the record/response details to the clients
-// TODO: look through javadocs of all classes to see if they are in-sync with generics changes
 class InMemoryQueueService implements QueueService<QueueServiceRecord, QueueServiceResponse> {
 
     private static Logger LOGGER = Logger.getLogger(InMemoryQueueService.class.getName());
