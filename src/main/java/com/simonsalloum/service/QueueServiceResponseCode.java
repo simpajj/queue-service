@@ -14,4 +14,8 @@ public enum QueueServiceResponseCode {
     QueueServiceResponseCode(int responseCode) {
         this.responseCode = responseCode;
     }
+
+    public int getCode() {
+        return responseCode;
+    }
 }

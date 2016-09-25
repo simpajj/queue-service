@@ -34,4 +34,13 @@ public class QueueServiceRecord {
     public String getValue() {
         return value;
     }
+
+    /**
+     * Returns the String representation of a QueueServiceRecord
+     * @return the QueueServiceRecord as a string
+     */
+    @Override
+    public String toString() {
+        return "UUID: " + uuid + "\n" + "Value: " + value;
+    }
 }

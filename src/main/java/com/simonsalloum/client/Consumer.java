@@ -34,4 +34,8 @@ public class Consumer {
             return result;
         });
     }
+
+    public Future<QueueServiceResponse> consumeFromFile(QueueService<QueueServiceRecord, QueueServiceResponse> queue) {
+        return CompletableFuture.supplyAsync(queue::pull);
+    }
 }
