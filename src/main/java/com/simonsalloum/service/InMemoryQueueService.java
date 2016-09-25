@@ -12,17 +12,22 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * An in memory queue service implementing the QueueService interface
- * for pushing and pulling records to it. This queue service uses a
- * ConcurrentLinkedQueue, which is unbounded, to store records in memory
- * for consumption, as well as a {@link com.google.common.cache.Cache} for
- * intermediate storage of retrieved records. Each entry in the cache is
+ * An in-memory queue service implementing the
+ * {@link com.simonsalloum.service.QueueService} interface for pushing and
+ * pulling records to and from it. This queue service uses a
+ * {@link ConcurrentLinkedQueue}, which is unbounded, to store records
+ * in memory for consumption, as well as a {@link com.google.common.cache.Cache}
+ * for intermediate storage of retrieved records. Each entry in the cache is
  * automatically evicted after a configurable amount of time.
  *
  * The implementation is designed to be non-blocking and to not require
  * object level locks. This is further supported by the asynchronous
  * implementations of {@link com.simonsalloum.client.Producer} and
  * {@link com.simonsalloum.client.Consumer} respectively.
+ *
+ * The queue is designed to accept records of type
+ * {@link com.simonsalloum.service.QueueServiceRecord} and to respond
+ * with {@link com.simonsalloum.service.QueueServiceResponse}.
  *
  * @author simon.salloum
  */
