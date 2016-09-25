@@ -1,9 +1,8 @@
 package com.simonsalloum.service;
 
 /**
- * A response from any class implementing the {@link com.simonsalloum.service.QueueService}
- * interface. The response may or may not include a record, depending on the implementation
- * details of the QueueService.
+ * A response specific to the {@link com.simonsalloum.service.InMemoryQueueService}
+ * implementation of the {@link com.simonsalloum.service.QueueService} interface.
  */
 
 import javax.annotation.Nullable;

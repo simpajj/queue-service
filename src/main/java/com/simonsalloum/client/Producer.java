@@ -10,7 +10,7 @@ import java.util.concurrent.Future;
 /**
  * A simple Producer used to asynchronously send records
  * to and receive responses from any class implementing
- * the QueueService interface.
+ * the {@link QueueService} interface.
  *
  * @author simon.salloum
  */

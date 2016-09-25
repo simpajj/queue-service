@@ -119,4 +119,12 @@ public class InMemoryQueueTest {
         ticker.advance(2, TimeUnit.SECONDS);
         assertEquals(0, queueService.consumedMessages());
     }
+
+    @Test
+    public void testPushMultipleQueueInstances() throws ExecutionException, InterruptedException {
+        InMemoryQueueService queueService2 = new InMemoryQueueService();
+        Future<QueueServiceResponse> response = producerOne.send(inMemoryQueueService, MESSAGE);
+        response.get();
+        assertEquals(1, queueService2.size());
+    }
 }

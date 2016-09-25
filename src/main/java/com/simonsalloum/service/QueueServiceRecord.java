@@ -3,14 +3,15 @@ package com.simonsalloum.service;
 import java.util.UUID;
 
 /**
- * A record specific to the InMemoryQueueService implementation.
+ * A record specific to the {@link InMemoryQueueService}
+ * implementation of the {@link QueueService} interface.
  */
 public class QueueServiceRecord {
     private final UUID uuid;
     private final String value;
 
     /**
-     * Upon initialization, the record is assigned its own {@link UUID}
+     * Upon construction, the record is assigned its own {@link UUID}
      * @param value the value to be stored in the queue
      */
     public QueueServiceRecord(String value) {

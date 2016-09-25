@@ -10,8 +10,8 @@ import java.util.concurrent.Future;
 
 /**
  * A simple Consumer used to asynchronously retrieve records
- * from any class implementing the QueueService interface.
- * The Consumer sends a delete request whenever the future is
+ * from any class implementing the {@link QueueService} interface.
+ * The consumer sends a delete request whenever the future is
  * completed, triggering the queue to remove the retrieved record.
  *
  * @author simon.salloum
