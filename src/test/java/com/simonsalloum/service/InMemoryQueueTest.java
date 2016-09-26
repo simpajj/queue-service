@@ -35,7 +35,7 @@ public class InMemoryQueueTest {
     public void testPushOneRecord() throws ExecutionException, InterruptedException {
         Future<QueueServiceResponse> response = producerOne.send(inMemoryQueueService, MESSAGE);
 
-        assertEquals(QueueServiceResponseCode.RECORD_PRODUCED, response.get().getResponseCode());
+        assertEquals(QueueServiceResponse.ResponseCode.RECORD_PRODUCED, response.get().getResponseCode());
         assertEquals(1, inMemoryQueueService.size());
     }
 
@@ -46,7 +46,7 @@ public class InMemoryQueueTest {
         responses.add(producerTwo.send(inMemoryQueueService, MESSAGE));
 
         for (Future<QueueServiceResponse> response : responses) {
-            assertEquals(QueueServiceResponseCode.RECORD_PRODUCED, response.get().getResponseCode());
+            assertEquals(QueueServiceResponse.ResponseCode.RECORD_PRODUCED, response.get().getResponseCode());
         }
         assertEquals(2, inMemoryQueueService.size());
     }
@@ -60,7 +60,7 @@ public class InMemoryQueueTest {
         }
 
         for(Future<QueueServiceResponse> response : responses) {
-            assertEquals(QueueServiceResponseCode.RECORD_PRODUCED, response.get().getResponseCode());
+            assertEquals(QueueServiceResponse.ResponseCode.RECORD_PRODUCED, response.get().getResponseCode());
         }
         assertEquals(4, inMemoryQueueService.size());
     }
@@ -68,14 +68,14 @@ public class InMemoryQueueTest {
     @Test
     public void testPushNullRecord() throws ExecutionException, InterruptedException {
         Future<QueueServiceResponse> response = producerOne.send(inMemoryQueueService, null);
-        assertEquals(QueueServiceResponseCode.RECORD_WAS_NULL, response.get().getResponseCode());
+        assertEquals(QueueServiceResponse.ResponseCode.RECORD_WAS_NULL, response.get().getResponseCode());
     }
 
     @Test
     public void testPullOneRecord() throws ExecutionException, InterruptedException {
         InMemoryQueueService queueServiceMock = mock(InMemoryQueueService.class);
         QueueServiceRecord queueServiceRecord = new QueueServiceRecord(MESSAGE);
-        QueueServiceResponse response = new QueueServiceResponse(QueueServiceResponseCode.RECORD_FOUND, queueServiceRecord);
+        QueueServiceResponse response = new QueueServiceResponse(QueueServiceResponse.ResponseCode.RECORD_FOUND, queueServiceRecord);
 
         when(queueServiceMock.pull()).thenReturn(response);
         assertEquals(queueServiceRecord.getValue(), consumer.consume(queueServiceMock).get().getQueueServiceRecord().getValue());
@@ -84,7 +84,7 @@ public class InMemoryQueueTest {
     @Test
     public void testPullOneRecordEmptyQueue() throws ExecutionException, InterruptedException {
         Future<QueueServiceResponse> response = consumer.consume(inMemoryQueueService);
-        assertEquals(QueueServiceResponseCode.RECORD_NOT_FOUND, response.get().getResponseCode());
+        assertEquals(QueueServiceResponse.ResponseCode.RECORD_NOT_FOUND, response.get().getResponseCode());
     }
 
     @Test

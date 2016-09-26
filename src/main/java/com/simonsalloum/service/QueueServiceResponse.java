@@ -8,35 +8,49 @@ import javax.annotation.Nullable;
  * implementation of the {@link com.simonsalloum.service.QueueService} interface.
  */
 public class QueueServiceResponse {
-    private final QueueServiceResponseCode responseCode;
+    public enum ResponseCode {
+        RECORD_PRODUCED,
+        RECORD_WAS_NULL,
+        RECORD_FOUND,
+        RECORD_NOT_FOUND;
+
+        ResponseCode() {}
+
+        @Override
+        public String toString() {
+            return this.getClass().getSimpleName() + "[response=" + this.name() + "]";
+        }
+    }
+
+    private final ResponseCode responseCode;
     @Nullable private final QueueServiceRecord queueServiceRecord;
 
     /**
-     * Creates a QueueServiceResponse with the given {@link QueueServiceResponseCode}
+     * Creates a QueueServiceResponse with the given {@link ResponseCode}
      * and the record set to null
-     * @param responseCode the {@link QueueServiceResponseCode} to be used in this response
+     * @param responseCode the {@link ResponseCode} to be used in this response
      */
-    QueueServiceResponse(QueueServiceResponseCode responseCode) {
+    QueueServiceResponse(ResponseCode responseCode) {
         this.responseCode = responseCode;
         queueServiceRecord = null;
     }
 
     /**
-     * Creates a QueueServiceResponse with the given {@link QueueServiceResponseCode}
+     * Creates a QueueServiceResponse with the given {@link ResponseCode}
      * and the given {@link QueueServiceRecord}
-     * @param responseCode the {@link QueueServiceResponseCode} to be used in the response
+     * @param responseCode the {@link ResponseCode} to be used in the response
      * @param record the {@link QueueServiceRecord} to be used in the response
      */
-    QueueServiceResponse(QueueServiceResponseCode responseCode, @Nullable QueueServiceRecord record) {
+    QueueServiceResponse(ResponseCode responseCode, @Nullable QueueServiceRecord record) {
         this.responseCode = responseCode;
         this.queueServiceRecord = record;
     }
 
     /**
-     * Returns the {@link QueueServiceResponseCode} of the response
-     * @return the {@link QueueServiceResponseCode}
+     * Returns the {@link ResponseCode} of the response
+     * @return the {@link ResponseCode}
      */
-    public QueueServiceResponseCode getResponseCode() {
+    public ResponseCode getResponseCode() {
         return responseCode;
     }
 

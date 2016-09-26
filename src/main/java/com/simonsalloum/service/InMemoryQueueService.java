@@ -60,9 +60,9 @@ class InMemoryQueueService implements QueueService<QueueServiceRecord, QueueServ
     public QueueServiceResponse push(QueueServiceRecord queueServiceRecord) {
         if (queueServiceRecord.getValue() != null) {
             queue.add(queueServiceRecord);
-            return new QueueServiceResponse(QueueServiceResponseCode.RECORD_PRODUCED);
+            return new QueueServiceResponse(QueueServiceResponse.ResponseCode.RECORD_PRODUCED);
         }
-        else return new QueueServiceResponse(QueueServiceResponseCode.RECORD_WAS_NULL);
+        else return new QueueServiceResponse(QueueServiceResponse.ResponseCode.RECORD_WAS_NULL);
     }
 
     @Override
@@ -72,11 +72,11 @@ class InMemoryQueueService implements QueueService<QueueServiceRecord, QueueServ
             QueueServiceRecord queueServiceRecord = queue.remove();
             consumedMessages.put(queueServiceRecord.getId(), queueServiceRecord);
 
-            response = new QueueServiceResponse(QueueServiceResponseCode.RECORD_FOUND, queueServiceRecord);
+            response = new QueueServiceResponse(QueueServiceResponse.ResponseCode.RECORD_FOUND, queueServiceRecord);
             return response;
         } catch (NoSuchElementException e) {
             LOGGER.log(Level.WARNING, "Trying to pull a record from an empty queue");
-            return new QueueServiceResponse(QueueServiceResponseCode.RECORD_NOT_FOUND);
+            return new QueueServiceResponse(QueueServiceResponse.ResponseCode.RECORD_NOT_FOUND);
         }
     }
 

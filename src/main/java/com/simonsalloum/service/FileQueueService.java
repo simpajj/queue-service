@@ -18,7 +18,7 @@ public class FileQueueService implements QueueService<QueueServiceRecord, QueueS
 
     @Override
     public synchronized QueueServiceResponse push(QueueServiceRecord record) {
-        return new QueueServiceResponse(QueueServiceResponseCode.RECORD_PRODUCED, record);
+        return new QueueServiceResponse(QueueServiceResponse.ResponseCode.RECORD_PRODUCED, record);
     }
 
     @Override
