@@ -6,32 +6,32 @@ import java.util.UUID;
  * A record specific to the {@link InMemoryQueueService}
  * implementation of the {@link QueueService} interface.
  */
-public class QueueServiceRecord {
-    private final UUID uuid;
-    private final String value;
+public class QueueServiceRecord<K, V> {
+    private final UUID key;
+    private final V value;
 
     /**
      * Upon construction, the record is assigned its own {@link UUID}
-     * @param value the value to be stored in the queue
+     * @param value the value, of type V, to be stored in the queue
      */
-    public QueueServiceRecord(String value) {
-        uuid = UUID.randomUUID();
+    public QueueServiceRecord(V value) {
+        this.key = UUID.randomUUID();
         this.value = value;
     }
 
     /**
-     * Get the {@link UUID} of this record
-     * @return the {@link UUID} of the record
+     * Get the key, of type {@link UUID}, of this record
+     * @return the key of the record
      */
     public UUID getId() {
-        return uuid;
+        return key;
     }
 
     /**
-     * Get the value of the record
-     * @return the value of the record as a {@link String}
+     * Get the value, of type V, of the record
+     * @return the value of the record
      */
-    public String getValue() {
+    public V getValue() {
         return value;
     }
 
@@ -41,6 +41,6 @@ public class QueueServiceRecord {
      */
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + "[uuid=" + uuid + ", " + "value=" + value + "]";
+        return this.getClass().getSimpleName() + "[key=" + key + ", " + "value=" + value + "]";
     }
 }

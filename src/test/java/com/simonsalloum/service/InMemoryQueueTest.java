@@ -74,7 +74,7 @@ public class InMemoryQueueTest {
     @Test
     public void testPullOneRecord() throws ExecutionException, InterruptedException {
         InMemoryQueueService queueServiceMock = mock(InMemoryQueueService.class);
-        QueueServiceRecord queueServiceRecord = new QueueServiceRecord(MESSAGE);
+        QueueServiceRecord queueServiceRecord = new QueueServiceRecord<>(MESSAGE);
         QueueServiceResponse response = new QueueServiceResponse(QueueServiceResponse.ResponseCode.RECORD_FOUND, queueServiceRecord);
 
         when(queueServiceMock.pull()).thenReturn(response);
@@ -89,7 +89,7 @@ public class InMemoryQueueTest {
 
     @Test
     public void testPullAndDeleteOneRecord() throws ExecutionException, InterruptedException {
-        QueueServiceRecord queueServiceRecord = new QueueServiceRecord(MESSAGE);
+        QueueServiceRecord queueServiceRecord = new QueueServiceRecord<>(MESSAGE);
 
         inMemoryQueueService.push(queueServiceRecord);
         assertEquals(1, inMemoryQueueService.size());
@@ -106,7 +106,7 @@ public class InMemoryQueueTest {
     public void testExpireConsumedRecord() {
         FakeTicker ticker = new FakeTicker();
         InMemoryQueueService queueService = new InMemoryQueueService(2, TimeUnit.SECONDS, ticker);
-        QueueServiceRecord queueServiceRecord = new QueueServiceRecord(MESSAGE);
+        QueueServiceRecord queueServiceRecord = new QueueServiceRecord<>(MESSAGE);
 
         queueService.push(queueServiceRecord);
         assertEquals(1, queueService.size());

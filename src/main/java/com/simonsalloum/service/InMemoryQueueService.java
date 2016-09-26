@@ -53,7 +53,7 @@ class InMemoryQueueService implements QueueService<QueueServiceRecord, QueueServ
      */
     InMemoryQueueService() {
         queue = new ConcurrentLinkedQueue<>();
-        consumedMessages = CacheBuilder.newBuilder().expireAfterWrite(300, TimeUnit.SECONDS).build();
+        consumedMessages = CacheBuilder.newBuilder().expireAfterWrite(30, TimeUnit.SECONDS).build();
     }
 
     @Override

@@ -26,6 +26,6 @@ public class Producer {
      *         response from the queue, including a status code
      */
     public Future<QueueServiceResponse> send(QueueService<QueueServiceRecord, QueueServiceResponse> queue, String message) {
-        return CompletableFuture.supplyAsync(() -> queue.push(new QueueServiceRecord(message)));
+        return CompletableFuture.supplyAsync(() -> queue.push(new QueueServiceRecord<>(message)));
     }
 }
