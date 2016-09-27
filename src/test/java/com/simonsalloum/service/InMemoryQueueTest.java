@@ -54,7 +54,7 @@ public class InMemoryQueueTest {
     @Test
     public void testPushMultipleRecordsMultipleProducers() throws ExecutionException, InterruptedException {
         ArrayList<Future<QueueServiceResponse>> responses = new ArrayList<>();
-        for (int i = 0; i < 2; ++i) {
+        for (int i = 0; i < 10; ++i) {
             responses.add(producerOne.send(inMemoryQueueService, KEY, VALUE));
             responses.add(producerTwo.send(inMemoryQueueService, KEY, VALUE));
         }
@@ -62,7 +62,13 @@ public class InMemoryQueueTest {
         for(Future<QueueServiceResponse> response : responses) {
             assertEquals(QueueServiceResponse.ResponseCode.RECORD_PRODUCED, response.get().getResponseCode());
         }
-        assertEquals(4, inMemoryQueueService.size());
+        assertEquals(20, inMemoryQueueService.size());
+    }
+
+    @Test
+    public void testPushNullRecord() {
+        QueueServiceResponse response = inMemoryQueueService.push(null);
+        assertEquals(QueueServiceResponse.ResponseCode.RECORD_WAS_NULL, response.getResponseCode());
     }
 
     @Test
@@ -87,20 +93,11 @@ public class InMemoryQueueTest {
     }
 
     @Test
-    public void testPullRecordMultipleValuesSameKey() {
-        QueueServiceRecord record = new QueueServiceRecord(null, VALUE);
-        inMemoryQueueService.push(record);
-        inMemoryQueueService.push(record);
-
-        inMemoryQueueService.pull();
-        assertEquals(1, inMemoryQueueService.size());
-    }
-
-
-    @Test
-    public void testPushNullRecord() {
-        QueueServiceResponse response = inMemoryQueueService.push(null);
-        assertEquals(QueueServiceResponse.ResponseCode.RECORD_WAS_NULL, response.getResponseCode());
+    public void testPushMultipleQueueInstances() throws ExecutionException, InterruptedException {
+        InMemoryQueueService queueService2 = new InMemoryQueueService();
+        Future<QueueServiceResponse> response = producerOne.send(inMemoryQueueService, KEY, VALUE);
+        response.get();
+        assertEquals(1, queueService2.size());
     }
 
     @Test
@@ -155,10 +152,12 @@ public class InMemoryQueueTest {
     }
 
     @Test
-    public void testPushMultipleQueueInstances() throws ExecutionException, InterruptedException {
-        InMemoryQueueService queueService2 = new InMemoryQueueService();
-        Future<QueueServiceResponse> response = producerOne.send(inMemoryQueueService, KEY, VALUE);
-        response.get();
-        assertEquals(1, queueService2.size());
+    public void testPullRecordMultipleValuesSameKey() {
+        QueueServiceRecord record = new QueueServiceRecord(null, VALUE);
+        inMemoryQueueService.push(record);
+        inMemoryQueueService.push(record);
+
+        inMemoryQueueService.pull();
+        assertEquals(1, inMemoryQueueService.size());
     }
 }
