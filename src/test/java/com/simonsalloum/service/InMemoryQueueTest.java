@@ -18,25 +18,21 @@ import static org.mockito.Mockito.when;
 
 public class InMemoryQueueTest {
 
-    // TODO: convert all to final?
-    // TODO: generate one UUID at setup?
-    private Producer<UUID, String> producerOne;
-    private Producer<UUID, String> producerTwo;
-    private Consumer consumer;
-    private InMemoryQueueService inMemoryQueueService;
-    private static final String MESSAGE = "hi";
+    private static final UUID KEY = UUID.randomUUID();
+    private static final String VALUE = "hi";
+    private static final Producer<UUID, String> producerOne = new Producer<>();
+    private static final Producer<UUID, String> producerTwo = new Producer<>();
+    private static final Consumer consumer = new Consumer();
+    private static InMemoryQueueService inMemoryQueueService;
 
     @Before
     public void setUp() {
-        producerOne = new Producer<>();
-        producerTwo = new Producer<>();
-        consumer = new Consumer();
         inMemoryQueueService = new InMemoryQueueService();
     }
 
     @Test
     public void testPushOneRecord() throws ExecutionException, InterruptedException {
-        Future<QueueServiceResponse> response = producerOne.send(inMemoryQueueService, UUID.randomUUID(), MESSAGE);
+        Future<QueueServiceResponse> response = producerOne.send(inMemoryQueueService, KEY, VALUE);
 
         assertEquals(QueueServiceResponse.ResponseCode.RECORD_PRODUCED, response.get().getResponseCode());
         assertEquals(1, inMemoryQueueService.size());
@@ -45,8 +41,8 @@ public class InMemoryQueueTest {
     @Test
     public void testPushMultipleRecordsOneProducer() throws ExecutionException, InterruptedException {
         ArrayList<Future<QueueServiceResponse>> responses = new ArrayList<>();
-        responses.add(producerOne.send(inMemoryQueueService, UUID.randomUUID(), MESSAGE));
-        responses.add(producerTwo.send(inMemoryQueueService, UUID.randomUUID(), MESSAGE));
+        responses.add(producerOne.send(inMemoryQueueService, KEY, VALUE));
+        responses.add(producerTwo.send(inMemoryQueueService, KEY, VALUE));
 
         for (Future<QueueServiceResponse> response : responses) {
             assertEquals(QueueServiceResponse.ResponseCode.RECORD_PRODUCED, response.get().getResponseCode());
@@ -58,8 +54,8 @@ public class InMemoryQueueTest {
     public void testPushMultipleRecordsMultipleProducers() throws ExecutionException, InterruptedException {
         ArrayList<Future<QueueServiceResponse>> responses = new ArrayList<>();
         for (int i = 0; i < 2; ++i) {
-            responses.add(producerOne.send(inMemoryQueueService, UUID.randomUUID(), MESSAGE));
-            responses.add(producerTwo.send(inMemoryQueueService, UUID.randomUUID(), MESSAGE));
+            responses.add(producerOne.send(inMemoryQueueService, KEY, VALUE));
+            responses.add(producerTwo.send(inMemoryQueueService, KEY, VALUE));
         }
 
         for(Future<QueueServiceResponse> response : responses) {
@@ -70,13 +66,13 @@ public class InMemoryQueueTest {
 
     @Test
     public void testPushNullValue() throws ExecutionException, InterruptedException {
-        Future<QueueServiceResponse> response = producerOne.send(inMemoryQueueService, UUID.randomUUID(), null);
+        Future<QueueServiceResponse> response = producerOne.send(inMemoryQueueService, KEY, null);
         assertEquals(QueueServiceResponse.ResponseCode.RECORD_PRODUCED, response.get().getResponseCode());
     }
 
     @Test
     public void testPushNullKey() throws ExecutionException, InterruptedException {
-        Future<QueueServiceResponse> response = producerOne.send(inMemoryQueueService, null, MESSAGE);
+        Future<QueueServiceResponse> response = producerOne.send(inMemoryQueueService, null, VALUE);
         assertEquals(QueueServiceResponse.ResponseCode.RECORD_PRODUCED, response.get().getResponseCode());
     }
 
@@ -89,7 +85,7 @@ public class InMemoryQueueTest {
     @Test
     public void testPullOneRecord() throws ExecutionException, InterruptedException {
         InMemoryQueueService queueServiceMock = mock(InMemoryQueueService.class);
-        QueueServiceRecord queueServiceRecord = new QueueServiceRecord<>(UUID.randomUUID(), MESSAGE);
+        QueueServiceRecord queueServiceRecord = new QueueServiceRecord<>(KEY, VALUE);
         QueueServiceResponse response = new QueueServiceResponse(QueueServiceResponse.ResponseCode.RECORD_FOUND, queueServiceRecord);
 
         when(queueServiceMock.pull()).thenReturn(response);
@@ -104,7 +100,7 @@ public class InMemoryQueueTest {
 
     @Test
     public void testPullAndDeleteOneRecord() throws ExecutionException, InterruptedException {
-        QueueServiceRecord queueServiceRecord = new QueueServiceRecord<>(UUID.randomUUID(), MESSAGE);
+        QueueServiceRecord queueServiceRecord = new QueueServiceRecord<>(KEY, VALUE);
 
         inMemoryQueueService.push(queueServiceRecord);
         assertEquals(1, inMemoryQueueService.size());
@@ -121,7 +117,7 @@ public class InMemoryQueueTest {
     public void testExpireConsumedRecord() {
         FakeTicker ticker = new FakeTicker();
         InMemoryQueueService queueService = new InMemoryQueueService(2, TimeUnit.SECONDS, ticker);
-        QueueServiceRecord queueServiceRecord = new QueueServiceRecord<>(UUID.randomUUID(), MESSAGE);
+        QueueServiceRecord queueServiceRecord = new QueueServiceRecord<>(KEY, VALUE);
 
         queueService.push(queueServiceRecord);
         assertEquals(1, queueService.size());
@@ -138,7 +134,7 @@ public class InMemoryQueueTest {
     @Test
     public void testPushMultipleQueueInstances() throws ExecutionException, InterruptedException {
         InMemoryQueueService queueService2 = new InMemoryQueueService();
-        Future<QueueServiceResponse> response = producerOne.send(inMemoryQueueService, UUID.randomUUID(), MESSAGE);
+        Future<QueueServiceResponse> response = producerOne.send(inMemoryQueueService, KEY, VALUE);
         response.get();
         assertEquals(1, queueService2.size());
     }
