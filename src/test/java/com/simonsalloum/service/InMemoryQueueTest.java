@@ -93,6 +93,16 @@ public class InMemoryQueueTest {
     }
 
     @Test
+    public void testPushDifferentKeyTypes() {
+        QueueServiceRecord record = new QueueServiceRecord<>(null, VALUE);
+        QueueServiceRecord record2 = new QueueServiceRecord<>(KEY, VALUE);
+
+        inMemoryQueueService.push(record);
+        inMemoryQueueService.push(record2);
+        assertEquals(2, inMemoryQueueService.size());
+    }
+
+    @Test
     public void testPushMultipleQueueInstances() throws ExecutionException, InterruptedException {
         InMemoryQueueService queueService2 = new InMemoryQueueService();
         Future<QueueServiceResponse> response = producerOne.send(inMemoryQueueService, KEY, VALUE);
