@@ -6,7 +6,7 @@ import java.util.UUID;
  * An immutable record specific to the {@link InMemoryQueueService}
  * implementation of the {@link QueueService} interface.
  */
-public class QueueServiceRecord<K, V> {
+public class QueueServiceRecord<V> {
     private final UUID key;
     private final V value;
 

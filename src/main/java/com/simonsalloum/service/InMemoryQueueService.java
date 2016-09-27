@@ -32,9 +32,9 @@ import java.util.logging.Logger;
 
 class InMemoryQueueService implements QueueService<QueueServiceRecord, QueueServiceResponse> {
 
-    private static Logger LOGGER = Logger.getLogger(InMemoryQueueService.class.getName());
-    private static Cache<UUID, QueueServiceRecord> consumedMessages;
+    private static final Logger LOGGER = Logger.getLogger(InMemoryQueueService.class.getName());
     private static ConcurrentLinkedQueue<QueueServiceRecord> queue;
+    private static Cache<UUID, QueueServiceRecord> consumedMessages;
 
     /**
      * Used to override the default cache eviction time of 300s.
@@ -59,8 +59,13 @@ class InMemoryQueueService implements QueueService<QueueServiceRecord, QueueServ
     @Override
     public QueueServiceResponse push(QueueServiceRecord queueServiceRecord) {
         if (queueServiceRecord.getValue() != null) {
-            queue.add(queueServiceRecord);
-            return new QueueServiceResponse(QueueServiceResponse.ResponseCode.RECORD_PRODUCED);
+            try {
+                queue.add(queueServiceRecord);
+                return new QueueServiceResponse(QueueServiceResponse.ResponseCode.RECORD_PRODUCED);
+            } catch (IllegalStateException e) {
+                LOGGER.log(Level.WARNING, "Trying to push a record to a full queue");
+                return new QueueServiceResponse(QueueServiceResponse.ResponseCode.QUEUE_FULL);
+            }
         }
         else return new QueueServiceResponse(QueueServiceResponse.ResponseCode.RECORD_WAS_NULL);
     }

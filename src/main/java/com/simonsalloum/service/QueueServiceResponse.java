@@ -12,7 +12,8 @@ public class QueueServiceResponse {
         RECORD_PRODUCED,
         RECORD_WAS_NULL,
         RECORD_FOUND,
-        RECORD_NOT_FOUND;
+        RECORD_NOT_FOUND,
+        QUEUE_FULL;
 
         ResponseCode() {}
 
