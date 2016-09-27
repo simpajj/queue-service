@@ -85,7 +85,7 @@ public class InMemoryQueueTest {
 
     @Test
     public void testPushMultipleRecordsNullKey() {
-        QueueServiceRecord record = new QueueServiceRecord(null, VALUE);
+        QueueServiceRecord record = new QueueServiceRecord<>(null, VALUE);
         inMemoryQueueService.push(record);
         inMemoryQueueService.push(record);
 
@@ -153,7 +153,7 @@ public class InMemoryQueueTest {
 
     @Test
     public void testPullRecordMultipleValuesSameKey() {
-        QueueServiceRecord record = new QueueServiceRecord(null, VALUE);
+        QueueServiceRecord record = new QueueServiceRecord<>(null, VALUE);
         inMemoryQueueService.push(record);
         inMemoryQueueService.push(record);
 
