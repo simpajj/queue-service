@@ -69,9 +69,21 @@ public class InMemoryQueueTest {
     }
 
     @Test
-    public void testPushNullRecord() throws ExecutionException, InterruptedException {
+    public void testPushNullValue() throws ExecutionException, InterruptedException {
         Future<QueueServiceResponse> response = producerOne.send(inMemoryQueueService, UUID.randomUUID(), null);
-        assertEquals(QueueServiceResponse.ResponseCode.RECORD_WAS_NULL, response.get().getResponseCode());
+        assertEquals(QueueServiceResponse.ResponseCode.RECORD_PRODUCED, response.get().getResponseCode());
+    }
+
+    @Test
+    public void testPushNullKey() throws ExecutionException, InterruptedException {
+        Future<QueueServiceResponse> response = producerOne.send(inMemoryQueueService, null, MESSAGE);
+        assertEquals(QueueServiceResponse.ResponseCode.RECORD_PRODUCED, response.get().getResponseCode());
+    }
+
+    @Test
+    public void testPushNullRecord() {
+        QueueServiceResponse response = inMemoryQueueService.push(null);
+        assertEquals(QueueServiceResponse.ResponseCode.RECORD_WAS_NULL, response.getResponseCode());
     }
 
     @Test
@@ -87,7 +99,7 @@ public class InMemoryQueueTest {
     @Test
     public void testPullOneRecordEmptyQueue() throws ExecutionException, InterruptedException {
         Future<QueueServiceResponse> response = consumer.consume(inMemoryQueueService);
-        assertEquals(QueueServiceResponse.ResponseCode.RECORD_NOT_FOUND, response.get().getResponseCode());
+        assertEquals(QueueServiceResponse.ResponseCode.QUEUE_EMPTY, response.get().getResponseCode());
     }
 
     @Test

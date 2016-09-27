@@ -9,11 +9,11 @@ import javax.annotation.Nullable;
  */
 public class QueueServiceResponse {
     public enum ResponseCode {
-        RECORD_PRODUCED,
-        RECORD_WAS_NULL,
+        QUEUE_EMPTY,
+        QUEUE_FULL,
         RECORD_FOUND,
-        RECORD_NOT_FOUND,
-        QUEUE_FULL;
+        RECORD_PRODUCED,
+        RECORD_WAS_NULL;
 
         @Override
         public String toString() {

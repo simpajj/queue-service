@@ -35,23 +35,23 @@ public class QueueServiceRecord<K, V> {
         }
     }
 
-    @Nullable private final Key<K> key;
-    private final V value;
+    private final Key<K> key;
+    @Nullable private final V value;
 
     /**
      * @param key the key to be stored in the queue, of type K or null if no key is specified
      * @param value the value, of type V, to be stored in the queue
      */
-    public QueueServiceRecord(K key, V value) {
+    public QueueServiceRecord(K key, @Nullable V value) {
         this.key = new Key<>(key);
         this.value = value;
     }
 
-    @Nullable
     public Key<K> getKey() {
         return key;
     }
 
+    @Nullable
     public V getValue() {
         return value;
     }

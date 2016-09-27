@@ -30,6 +30,7 @@ import java.util.logging.Logger;
  * @author simon.salloum
  */
 
+// TODO: revise javadocs for ALL classes
 class InMemoryQueueService implements QueueService {
 
     private static final Logger LOGGER = Logger.getLogger(InMemoryQueueService.class.getName());
@@ -58,7 +59,7 @@ class InMemoryQueueService implements QueueService {
 
     @Override
     public QueueServiceResponse push(QueueServiceRecord queueServiceRecord) {
-        if (queueServiceRecord.getValue() != null) {
+        if (queueServiceRecord != null) {
             try {
                 queue.add(queueServiceRecord);
                 return new QueueServiceResponse(QueueServiceResponse.ResponseCode.RECORD_PRODUCED);
@@ -79,7 +80,7 @@ class InMemoryQueueService implements QueueService {
             return new QueueServiceResponse(QueueServiceResponse.ResponseCode.RECORD_FOUND, queueServiceRecord);
         } catch (NoSuchElementException e) {
             LOGGER.log(Level.WARNING, "Trying to pull a record from an empty queue");
-            return new QueueServiceResponse(QueueServiceResponse.ResponseCode.RECORD_NOT_FOUND);
+            return new QueueServiceResponse(QueueServiceResponse.ResponseCode.QUEUE_EMPTY);
         }
     }
 
