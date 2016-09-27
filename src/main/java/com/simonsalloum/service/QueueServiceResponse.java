@@ -58,7 +58,7 @@ public class QueueServiceResponse {
 
     @Override
     public String toString() {
-        if (queueServiceRecord != null)
+        if (getQueueServiceRecord() != null)
             return this.getClass().getSimpleName() + "[" +
                     "responseCode=" + getResponseCode().toString() + ", " +
                     "queueServiceRecord=" + getQueueServiceRecord().toString() +
