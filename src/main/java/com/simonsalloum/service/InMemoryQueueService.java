@@ -49,7 +49,7 @@ class InMemoryQueueService implements QueueService<QueueServiceRecord, QueueServ
     }
 
     /**
-     * Default constructor which sets the cache eviction time to 300s.
+     * Default constructor which sets the cache eviction time to 30s.
      */
     InMemoryQueueService() {
         queue = new ConcurrentLinkedQueue<>();
@@ -70,7 +70,7 @@ class InMemoryQueueService implements QueueService<QueueServiceRecord, QueueServ
         QueueServiceResponse response;
         try {
             QueueServiceRecord queueServiceRecord = queue.remove();
-            consumedMessages.put(queueServiceRecord.getId(), queueServiceRecord);
+            consumedMessages.put(queueServiceRecord.getKey(), queueServiceRecord);
 
             response = new QueueServiceResponse(QueueServiceResponse.ResponseCode.RECORD_FOUND, queueServiceRecord);
             return response;
@@ -82,8 +82,8 @@ class InMemoryQueueService implements QueueService<QueueServiceRecord, QueueServ
 
     @Override
     public void delete(QueueServiceRecord queueServiceRecord) {
-        LOGGER.log(Level.FINE, "Removing queueServiceRecord: " + queueServiceRecord.getId());
-        consumedMessages.invalidate(queueServiceRecord.getId());
+        LOGGER.log(Level.FINE, "Removing queueServiceRecord: " + queueServiceRecord.getKey());
+        consumedMessages.invalidate(queueServiceRecord.getKey());
     }
 
     public int size() {

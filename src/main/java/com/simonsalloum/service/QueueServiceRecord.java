@@ -3,7 +3,7 @@ package com.simonsalloum.service;
 import java.util.UUID;
 
 /**
- * A record specific to the {@link InMemoryQueueService}
+ * An immutable record specific to the {@link InMemoryQueueService}
  * implementation of the {@link QueueService} interface.
  */
 public class QueueServiceRecord<K, V> {
@@ -19,28 +19,16 @@ public class QueueServiceRecord<K, V> {
         this.value = value;
     }
 
-    /**
-     * Get the key, of type {@link UUID}, of this record
-     * @return the key of the record
-     */
-    public UUID getId() {
+    public UUID getKey() {
         return key;
     }
 
-    /**
-     * Get the value, of type V, of the record
-     * @return the value of the record
-     */
     public V getValue() {
         return value;
     }
 
-    /**
-     * Returns the String representation of a QueueServiceRecord
-     * @return the QueueServiceRecord as a string
-     */
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + "[key=" + key + ", " + "value=" + value + "]";
+        return this.getClass().getSimpleName() + "[key=" + getKey() + ", " + "value=" + getValue() + "]";
     }
 }
