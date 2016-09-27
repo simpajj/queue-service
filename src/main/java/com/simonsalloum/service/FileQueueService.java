@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
-public class FileQueueService implements QueueService<QueueServiceRecord, QueueServiceResponse> {
+public class FileQueueService implements QueueService {
 
     private static String path;
     private static String fileName;

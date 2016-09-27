@@ -2,7 +2,7 @@ package com.simonsalloum.service;
 
 import com.amazonaws.services.sqs.AmazonSQSClient;
 
-public class SqsQueueService implements QueueService<QueueServiceRecord, QueueServiceResponse> {
+public class SqsQueueService implements QueueService {
   //
   // Task 4: Optionally implement parts of me.
   //

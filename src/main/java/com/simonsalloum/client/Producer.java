@@ -4,6 +4,7 @@ import com.simonsalloum.service.QueueService;
 import com.simonsalloum.service.QueueServiceRecord;
 import com.simonsalloum.service.QueueServiceResponse;
 
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
@@ -14,18 +15,18 @@ import java.util.concurrent.Future;
  *
  * @author simon.salloum
  */
-public class Producer {
+public class Producer<K, V> {
 
     public Producer() {}
 
     /**
      * Sends one message to a queue.
      * @param queue the receiving queue
-     * @param message the message to be sent to the queue
+     * @param value the value to be sent to the queue
      * @return Future<QueueServiceResponse> a future with a
      *         response from the queue, including a status code
      */
-    public Future<QueueServiceResponse> send(QueueService<QueueServiceRecord, QueueServiceResponse> queue, String message) {
-        return CompletableFuture.supplyAsync(() -> queue.push(new QueueServiceRecord<>(message)));
+    public Future<QueueServiceResponse> send(QueueService queue, K key, V value) {
+        return CompletableFuture.supplyAsync(() -> queue.push(new QueueServiceRecord<>(key, value)));
     }
 }

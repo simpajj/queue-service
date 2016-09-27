@@ -30,11 +30,11 @@ import java.util.logging.Logger;
  * @author simon.salloum
  */
 
-class InMemoryQueueService implements QueueService<QueueServiceRecord, QueueServiceResponse> {
+class InMemoryQueueService implements QueueService {
 
     private static final Logger LOGGER = Logger.getLogger(InMemoryQueueService.class.getName());
     private static ConcurrentLinkedQueue<QueueServiceRecord> queue;
-    private static Cache<UUID, QueueServiceRecord> consumedMessages;
+    private static Cache<QueueServiceRecord.Key, QueueServiceRecord> consumedMessages;
 
     /**
      * Used to override the default cache eviction time of 300s.
@@ -72,13 +72,11 @@ class InMemoryQueueService implements QueueService<QueueServiceRecord, QueueServ
 
     @Override
     public QueueServiceResponse pull() {
-        QueueServiceResponse response;
         try {
             QueueServiceRecord queueServiceRecord = queue.remove();
             consumedMessages.put(queueServiceRecord.getKey(), queueServiceRecord);
 
-            response = new QueueServiceResponse(QueueServiceResponse.ResponseCode.RECORD_FOUND, queueServiceRecord);
-            return response;
+            return new QueueServiceResponse(QueueServiceResponse.ResponseCode.RECORD_FOUND, queueServiceRecord);
         } catch (NoSuchElementException e) {
             LOGGER.log(Level.WARNING, "Trying to pull a record from an empty queue");
             return new QueueServiceResponse(QueueServiceResponse.ResponseCode.RECORD_NOT_FOUND);

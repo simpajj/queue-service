@@ -26,7 +26,7 @@ public class Consumer {
      * @return Future<QueueServiceResponse> a future with a response
      *         from the queue, including a status code and the record
      */
-    public Future<QueueServiceResponse> consume(QueueService<QueueServiceRecord, QueueServiceResponse> queue) {
+    public Future<QueueServiceResponse> consume(QueueService queue) {
         return CompletableFuture.supplyAsync(queue::pull).thenApply(result -> {
             if (result.getResponseCode() == QueueServiceResponse.ResponseCode.RECORD_FOUND)
                 queue.delete(result.getQueueServiceRecord());
@@ -34,7 +34,7 @@ public class Consumer {
         });
     }
 
-    public Future<QueueServiceResponse> consumeFromFile(QueueService<QueueServiceRecord, QueueServiceResponse> queue) {
+    public Future<QueueServiceResponse> consumeFromFile(QueueService queue) {
         return CompletableFuture.supplyAsync(queue::pull);
     }
 }
