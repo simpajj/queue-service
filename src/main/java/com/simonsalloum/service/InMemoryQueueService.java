@@ -11,25 +11,21 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * An in-memory queue service implementing the {@link QueueService}
- * interface for pushing and pulling records to and from it. This
- * queue service uses a {@link ConcurrentLinkedQueue}, which is unbounded,
+ * An in-memory queue service implementing the {@link QueueService}.
+ * This queue service uses an unbounded {@link ConcurrentLinkedQueue}
  * to store records in memory for consumption, as well as a {@link Cache}
  * for intermediate storage of retrieved records. Each entry in the cache is
  * automatically evicted after a configurable amount of time.
  *
- * The implementation is designed to be non-blocking and to not require
- * object level locks. This is further supported by the asynchronous
- * implementations of {@link com.simonsalloum.client.Producer} and
- * {@link com.simonsalloum.client.Consumer} respectively.
- *
- * The queue is designed to accept records of type {@link QueueServiceRecord}
- * and to respond with a {@link QueueServiceResponse}.
+ * The implementation is designed to be non-blocking, by using concurrent
+ * data structures. The non-blocking nature is further supported by an
+ * asynchronous client library designed to be used with the {@link QueueService}
+ * interface. See {@link com.simonsalloum.client.Producer} and
+ * {@link com.simonsalloum.client.Consumer} for more information.
  *
  * @author simon.salloum
  */
 
-// TODO: revise javadocs for ALL classes
 class InMemoryQueueService implements QueueService {
 
     private static final Logger LOGGER = Logger.getLogger(InMemoryQueueService.class.getName());
@@ -38,10 +34,9 @@ class InMemoryQueueService implements QueueService {
 
     /**
      * Used to override the default cache eviction time of 30s.
-     * @param evictionTime the maximum time, given in seconds, that an
-     *                       entry can be in the consumedMessages cache
-     *                       before being evicted.
-     * @param timeUnit the time unit of the eviction time
+     * @param evictionTime the maximum time that an entry can be in the consumedMessages cache
+     *                     before being evicted
+     * @param timeUnit the {@link TimeUnit} of the evictionTime parameter
      */
     InMemoryQueueService(int evictionTime, TimeUnit timeUnit, Ticker ticker) {
         queue = new ConcurrentLinkedQueue<>();

@@ -14,11 +14,15 @@ public class QueueServiceRecord<K, V> {
      * The key, of type T, of the QueueServiceRecord
      * @param <T>
      */
-    class Key<T> {
+    public class Key<T> {
         private final T key;
 
         Key(T key) {
             this.key = key;
+        }
+
+        public T getRawKey() {
+            return key;
         }
 
         @Override

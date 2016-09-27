@@ -4,8 +4,7 @@ package com.simonsalloum.service;
 import javax.annotation.Nullable;
 
 /**
- * An immutable response specific to the {@link InMemoryQueueService}
- * implementation of the {@link QueueService} interface.
+ * An immutable response specific to the {@link QueueService} interface.
  */
 public class QueueServiceResponse {
     public enum ResponseCode {
@@ -26,8 +25,8 @@ public class QueueServiceResponse {
 
     /**
      * Creates a QueueServiceResponse with the given {@link ResponseCode}
-     * and the record set to null
-     * @param responseCode the {@link ResponseCode} to be used in this response
+     * and the record set to null.
+     * @param responseCode the {@link ResponseCode} to be used in the response
      */
     QueueServiceResponse(ResponseCode responseCode) {
         this.responseCode = responseCode;
@@ -54,10 +53,7 @@ public class QueueServiceResponse {
      */
     @Nullable
     public QueueServiceRecord getQueueServiceRecord() {
-        if (queueServiceRecord != null)
-            return queueServiceRecord;
-        else
-            return null;
+        return queueServiceRecord;
     }
 
     @Override

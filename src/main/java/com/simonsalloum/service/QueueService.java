@@ -9,21 +9,21 @@ package com.simonsalloum.service;
 
 public interface QueueService {
     /**
-     * Pushes a record of an arbitrary type onto a queue
-     * @param record the record of type T to push onto the queue
-     * @return a response of type R
+     * Pushes a record of type {@link QueueServiceRecord} onto a queue
+     * @param record the record to push onto the queue
+     * @return the response of type {@link QueueServiceResponse}
      */
     QueueServiceResponse push(QueueServiceRecord record);
 
     /**
      * Retrieves a single record from a queue
-     * @return QueueServiceResponse including the record that was pulled
+     * @return {@link QueueServiceResponse}, possibly including the record that was pulled
      */
     QueueServiceResponse pull();
 
     /**
      * Deletes a record from the queue that was received by a pull
-     * @param record the record of type T to delete from the queue
+     * @param record the record of type {@link QueueServiceRecord} to delete from the queue
      */
     void delete(QueueServiceRecord record);
 
