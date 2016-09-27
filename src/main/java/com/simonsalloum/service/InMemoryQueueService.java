@@ -5,7 +5,6 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
 import java.util.NoSuchElementException;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -60,6 +59,7 @@ class InMemoryQueueService implements QueueService {
     @Override
     public QueueServiceResponse push(QueueServiceRecord queueServiceRecord) {
         if (queueServiceRecord != null) {
+            if (queueServiceRecord.getValue() == null) LOGGER.log(Level.WARNING, "Storing a record with a null value");
             try {
                 queue.add(queueServiceRecord);
                 return new QueueServiceResponse(QueueServiceResponse.ResponseCode.RECORD_PRODUCED);

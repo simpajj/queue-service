@@ -13,6 +13,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -77,6 +78,26 @@ public class InMemoryQueueTest {
     }
 
     @Test
+    public void testPushMultipleRecordsNullKey() {
+        QueueServiceRecord record = new QueueServiceRecord(null, VALUE);
+        inMemoryQueueService.push(record);
+        inMemoryQueueService.push(record);
+
+        assertEquals(2, inMemoryQueueService.size());
+    }
+
+    @Test
+    public void testPullRecordMultipleValuesSameKey() {
+        QueueServiceRecord record = new QueueServiceRecord(null, VALUE);
+        inMemoryQueueService.push(record);
+        inMemoryQueueService.push(record);
+
+        inMemoryQueueService.pull();
+        assertEquals(1, inMemoryQueueService.size());
+    }
+
+
+    @Test
     public void testPushNullRecord() {
         QueueServiceResponse response = inMemoryQueueService.push(null);
         assertEquals(QueueServiceResponse.ResponseCode.RECORD_WAS_NULL, response.getResponseCode());
@@ -89,7 +110,9 @@ public class InMemoryQueueTest {
         QueueServiceResponse response = new QueueServiceResponse(QueueServiceResponse.ResponseCode.RECORD_FOUND, queueServiceRecord);
 
         when(queueServiceMock.pull()).thenReturn(response);
-        assertEquals(queueServiceRecord.getValue(), consumer.consume(queueServiceMock).get().getQueueServiceRecord().getValue());
+        String value = (String) consumer.consume(queueServiceMock).get().getQueueServiceRecord().getValue();
+        assertNotNull(value);
+        assertEquals(queueServiceRecord.getValue(), value);
     }
 
     @Test
