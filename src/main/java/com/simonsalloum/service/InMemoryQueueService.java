@@ -86,11 +86,11 @@ class InMemoryQueueService implements QueueService<QueueServiceRecord, QueueServ
         consumedMessages.invalidate(queueServiceRecord.getKey());
     }
 
-    public int size() {
+    int size() {
         return queue.size();
     }
 
-    public long consumedMessages() {
+    long consumedMessages() {
         consumedMessages.cleanUp();
         return consumedMessages.size();
     }
