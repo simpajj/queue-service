@@ -17,7 +17,7 @@ public class FileQueueTest {
 
     @Before
     public void setUp() {
-        producer = new Producer<UUID, String>();
+        producer = new Producer<>();
         consumer = new Consumer();
         fileQueueService = new FileQueueService();
     }

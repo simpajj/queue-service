@@ -4,7 +4,6 @@ import com.simonsalloum.service.QueueService;
 import com.simonsalloum.service.QueueServiceRecord;
 import com.simonsalloum.service.QueueServiceResponse;
 
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 

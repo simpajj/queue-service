@@ -15,8 +15,6 @@ public class QueueServiceResponse {
         RECORD_NOT_FOUND,
         QUEUE_FULL;
 
-        ResponseCode() {}
-
         @Override
         public String toString() {
             return this.getClass().getSimpleName() + "[response=" + this.name() + "]";

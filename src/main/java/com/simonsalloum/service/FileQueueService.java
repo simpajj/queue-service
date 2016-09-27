@@ -39,7 +39,7 @@ public class FileQueueService implements QueueService {
         try {
             FileOutputStream fos = new FileOutputStream(filePath);
             FileChannel fileChannel = fos.getChannel();
-            int noOfBytesWritten = fileChannel.write(buffer);
+            fileChannel.write(buffer);
             fileChannel.close();
             fos.close();
         } catch (FileNotFoundException fnf) {

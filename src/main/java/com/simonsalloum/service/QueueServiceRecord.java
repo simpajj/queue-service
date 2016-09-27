@@ -15,7 +15,7 @@ public class QueueServiceRecord<K, V> {
      * @param <T>
      */
     class Key<T> {
-        private T key;
+        private final T key;
 
         Key(T key) {
             this.key = key;

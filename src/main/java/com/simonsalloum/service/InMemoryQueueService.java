@@ -37,7 +37,7 @@ class InMemoryQueueService implements QueueService {
     private static Cache<QueueServiceRecord.Key, QueueServiceRecord> consumedMessages;
 
     /**
-     * Used to override the default cache eviction time of 300s.
+     * Used to override the default cache eviction time of 30s.
      * @param evictionTime the maximum time, given in seconds, that an
      *                       entry can be in the consumedMessages cache
      *                       before being evicted.

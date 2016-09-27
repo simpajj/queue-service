@@ -1,7 +1,6 @@
 package com.simonsalloum.client;
 
 import com.simonsalloum.service.QueueService;
-import com.simonsalloum.service.QueueServiceRecord;
 import com.simonsalloum.service.QueueServiceResponse;
 
 import java.util.concurrent.CompletableFuture;
