@@ -22,8 +22,6 @@ public class FileQueueService implements QueueService {
         fileName = "hej.txt";
     }
 
-    // TODO: start out with synchronization, see if it can be done better later
-
     @Override
     public synchronized QueueServiceResponse push(QueueServiceRecord record) {
         String input = "hej";
@@ -57,7 +55,7 @@ public class FileQueueService implements QueueService {
     }
 
     @Override
-    public synchronized void delete(QueueServiceRecord record) {
+    public synchronized void delete(QueueServiceRecord record) {}
 
-    }
+
 }
