@@ -1,0 +1,5 @@
+A Java-based interface for queue implementations, along with two implementations of the interface.
+
+1. In-memory implementation:
+
+2. File-based implementation: 
