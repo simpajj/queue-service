@@ -27,18 +27,19 @@ import java.util.logging.Logger;
 public class FileQueueService implements QueueService {
 
     private static final Logger LOGGER = Logger.getLogger(InMemoryQueueService.class.getName());
+    private static final String SEPARATOR = System.getProperty("line.separator");
     private static String filePath;
     private static Properties props;
-    private static File file;
 
     public FileQueueService() throws IOException {
         loadProperties();
         filePath = props.getProperty("path");
-        file = new File(filePath);
+        File file = new File(filePath);
+        file.createNewFile();
     }
 
     @Override
-    public QueueServiceResponse push(QueueServiceRecord record) {
+    public synchronized QueueServiceResponse push(QueueServiceRecord record) {
         byte[] inputAsBytes;
 
         try {
@@ -49,12 +50,6 @@ public class FileQueueService implements QueueService {
         }
 
         ByteBuffer buffer = ByteBuffer.wrap(inputAsBytes);
-
-        try {
-            file.createNewFile();
-        } catch (IOException e) {
-            return new QueueServiceResponse(QueueServiceResponse.ResponseCode.COULD_NOT_CREATE_FILE);
-        }
 
         return writeToLogFile(buffer, record);
     }
@@ -71,7 +66,11 @@ public class FileQueueService implements QueueService {
         try {
             FileOutputStream fos = new FileOutputStream(filePath, true);
             FileChannel fileChannel = fos.getChannel();
+            ByteBuffer separatorBuffer = ByteBuffer.wrap(SEPARATOR.getBytes());
+
+            fileChannel.write(separatorBuffer);
             fileChannel.write(buffer);
+
             fileChannel.close();
             fos.close();
             return new QueueServiceResponse(QueueServiceResponse.ResponseCode.RECORD_PRODUCED, record);
