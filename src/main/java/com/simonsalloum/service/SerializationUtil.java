@@ -7,8 +7,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 /**
- * Utility class for serializing objects passed to
- * a {@link FileQueueService}
+ * Utility class for serialization and deserialization of objects
+ * passed to a {@link FileQueueService} instance
  */
 class SerializationUtil {
 

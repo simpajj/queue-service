@@ -24,7 +24,7 @@ import java.util.logging.Logger;
  * {@link com.simonsalloum.client.Consumer} for more information.
  *
  * @author simon.salloum
- */
+ **/
 
 class InMemoryQueueService implements QueueService {
 

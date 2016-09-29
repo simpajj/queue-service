@@ -7,16 +7,34 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * A file based queue service implementation of the {@link QueueService}
+ * interface. The implementation uses a {@link FileChannel} to write
+ * serialized {@link QueueServiceRecord}s to a file. The file location
+ * is specified via a configuration file and read at construction.
+ *
+ * The object serialization and deserialization is handled by
+ * {@link SerializationUtil}, which uses Java serialization, in turn
+ * requiring that the {@link QueueServiceRecord#value} is serializable.
+ *
+ * The implementation is designed to be used with the non-blocking client
+ * implementations {@link com.simonsalloum.client.Producer} and
+ * {@link com.simonsalloum.client.Consumer}.
+ *
+ * @author simon.salloum
+ **/
+
 public class FileQueueService implements QueueService {
 
     private static final Logger LOGGER = Logger.getLogger(InMemoryQueueService.class.getName());
     private static String filePath;
     private static Properties props;
+    private static File file;
 
     public FileQueueService() throws IOException {
         loadProperties();
         filePath = props.getProperty("path");
-        System.out.println(filePath);
+        file = new File(filePath);
     }
 
     @Override
@@ -31,7 +49,6 @@ public class FileQueueService implements QueueService {
         }
 
         ByteBuffer buffer = ByteBuffer.wrap(inputAsBytes);
-        File file = new File(filePath);
 
         try {
             file.createNewFile();
@@ -43,12 +60,12 @@ public class FileQueueService implements QueueService {
     }
 
     @Override
-    public synchronized QueueServiceResponse pull() {
+    public QueueServiceResponse pull() {
         return null;
     }
 
     @Override
-    public synchronized void delete(QueueServiceRecord record) {}
+    public void delete(QueueServiceRecord record) {}
 
     private QueueServiceResponse writeToLogFile(ByteBuffer buffer, QueueServiceRecord record) {
         try {
