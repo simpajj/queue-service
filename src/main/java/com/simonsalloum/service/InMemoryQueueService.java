@@ -11,7 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * An in-memory queue service implementing the {@link QueueService}.
+ * An in-memory FIFO queue implementing the {@link QueueService}.
  * This queue service uses an unbounded {@link ConcurrentLinkedQueue}
  * to store records in memory for consumption, as well as a {@link Cache}
  * for intermediate storage of retrieved records. Each entry in the cache is

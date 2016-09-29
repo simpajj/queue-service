@@ -8,7 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * A file based queue service implementation of the {@link QueueService}
+ * A file based FIFO queue implementation of the {@link QueueService}
  * interface. The implementation uses a {@link FileChannel} to write
  * serialized {@link QueueServiceRecord}s to a file. The file location
  * is specified via a configuration file and read at construction.
