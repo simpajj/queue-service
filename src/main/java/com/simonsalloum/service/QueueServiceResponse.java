@@ -8,9 +8,13 @@ import javax.annotation.Nullable;
  */
 public class QueueServiceResponse {
     public enum ResponseCode {
+        COULD_NOT_CREATE_FILE,
+        COULD_NOT_WRITE_FILE,
+        FILE_NOT_FOUND,
         QUEUE_EMPTY,
         QUEUE_FULL,
         RECORD_FOUND,
+        RECORD_NOT_SERIALIZABLE,
         RECORD_PRODUCED,
         RECORD_WAS_NULL;
 
