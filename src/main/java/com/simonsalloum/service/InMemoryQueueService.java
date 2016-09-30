@@ -26,7 +26,7 @@ import java.util.logging.Logger;
  * @author simon.salloum
  **/
 
-class InMemoryQueueService implements QueueService {
+public class InMemoryQueueService implements QueueService {
 
     private static final Logger LOGGER = Logger.getLogger(InMemoryQueueService.class.getName());
     private static ConcurrentLinkedQueue<QueueServiceRecord> queue;

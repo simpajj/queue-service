@@ -1,5 +1,6 @@
 package com.simonsalloum.client;
 
+import com.simonsalloum.service.InMemoryQueueService;
 import com.simonsalloum.service.QueueService;
 import com.simonsalloum.service.QueueServiceResponse;
 
@@ -25,7 +26,7 @@ public class Consumer {
     public Future<QueueServiceResponse> consume(QueueService queue) {
         return CompletableFuture.supplyAsync(queue::pull).thenApply(result -> {
             // TODO: if QueueService is of instance InMemoryQueueService, do the delete, else just return the result - update javadoc accordingly
-            if (result.getResponseCode() == QueueServiceResponse.ResponseCode.RECORD_FOUND)
+            if (result.getResponseCode() == QueueServiceResponse.ResponseCode.RECORD_FOUND && queue instanceof InMemoryQueueService)
                 queue.delete(result.getQueueServiceRecord());
             return result;
         });
