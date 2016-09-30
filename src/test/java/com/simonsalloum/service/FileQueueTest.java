@@ -6,12 +6,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 public class FileQueueTest {
-    private static Producer<UUID, byte[]> producer;
+    private static Producer<UUID, String> producer;
     private static Consumer consumer;
     private static FileQueueService fileQueueService;
 
@@ -25,24 +24,12 @@ public class FileQueueTest {
     // TODO: cleanup
     @Test
     public void testPushToFile() throws ExecutionException, InterruptedException {
-        TestClass hej = new TestClass("yo");
-        TestClass hej2 = new TestClass("hej");
-        try {
-            byte[] bytes = SerializationUtil.serialize(hej);
-            byte[] bytes2 = SerializationUtil.serialize(hej2);
-            producer.send(fileQueueService, UUID.randomUUID(), bytes).get();
-            producer.send(fileQueueService, UUID.randomUUID(), bytes2).get();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        String hej = "lolul";
+        String hej2 = "hej";
+        producer.send(fileQueueService, UUID.randomUUID(), hej).get();
+        producer.send(fileQueueService, UUID.randomUUID(), hej2).get();
 
-        //fileQueueService.pull();
-    }
-}
-
-class TestClass implements Serializable {
-    private String testField;
-    TestClass(String testField) {
-        this.testField = testField;
+        QueueServiceResponse response = fileQueueService.pull();
+        System.out.println(response.getQueueServiceRecord());
     }
 }
