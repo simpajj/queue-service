@@ -9,6 +9,7 @@ import java.io.*;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -54,22 +55,26 @@ public class FileQueueService implements QueueService {
     public synchronized QueueServiceResponse pull() {
         try {
             MappingIterator<Object> values = mapper.readValues(jsonParser, Object.class);
-            if (values.hasNext()) {
-                Object value = values.next();
-                QueueServiceRecord record = new QueueServiceRecord<>(null, value);
-                delete(record);
-                return new QueueServiceResponse(QueueServiceResponse.ResponseCode.RECORD_FOUND, new QueueServiceRecord<>(null, record));
-            } else {
-                return new QueueServiceResponse(QueueServiceResponse.ResponseCode.COULD_NOT_DESERIALIZE_OBJECT);
+            ArrayList<Object> objects = new ArrayList<>();
+            while (values.hasNext()) {
+                objects.add(values.nextValue());
             }
+            QueueServiceRecord record = new QueueServiceRecord<>(null, objects);
+            delete(record);
+            return new QueueServiceResponse(QueueServiceResponse.ResponseCode.RECORD_FOUND, record);
         } catch (IOException e) {
             return new QueueServiceResponse(QueueServiceResponse.ResponseCode.COULD_NOT_DESERIALIZE_OBJECT);
         }
     }
 
     @Override
-    public synchronized void delete(QueueServiceRecord record) {
-        // TODO: implement
+    public void delete(QueueServiceRecord record) {
+        try {
+            RandomAccessFile raf = new RandomAccessFile(file, "rw");
+            raf.setLength(0);
+        } catch (IOException e) {
+            LOGGER.log(Level.WARNING, "Could not empty contents of file. Data duplication possible.");
+        }
     }
 
     private QueueServiceResponse writeToLogFile(QueueServiceRecord record) {

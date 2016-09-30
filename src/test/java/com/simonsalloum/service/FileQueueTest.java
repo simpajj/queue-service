@@ -31,5 +31,6 @@ public class FileQueueTest {
 
         QueueServiceResponse response = fileQueueService.pull();
         System.out.println(response.getQueueServiceRecord());
+        System.out.println(response.getQueueServiceRecord().getValue());
     }
 }
