@@ -1,20 +1,15 @@
 package com.simonsalloum.service;
 
-import com.amazonaws.util.json.JSONObject;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.oracle.javafx.jmx.json.JSONFactory;
 
 import java.io.*;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
 import java.util.Properties;
-import java.util.Random;
-import java.util.RandomAccess;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -37,7 +32,6 @@ public class FileQueueService implements QueueService {
     private static Properties props;
     private static File file;
     private static ObjectMapper mapper;
-    private static JsonFactory jsonFactory;
     private static JsonParser jsonParser;
 
     public FileQueueService() throws IOException {
@@ -47,7 +41,7 @@ public class FileQueueService implements QueueService {
         file = new File(filePath);
         file.createNewFile();
         mapper = new ObjectMapper();
-        jsonFactory = new JsonFactory();
+        JsonFactory jsonFactory = new JsonFactory();
         jsonParser = jsonFactory.createParser(file);
     }
 
