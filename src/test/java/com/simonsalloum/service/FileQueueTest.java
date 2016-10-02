@@ -12,7 +12,7 @@ import static org.junit.Assert.assertEquals;
 
 public class FileQueueTest {
     private static final String MESSAGE = "hi";
-    private static Producer<String, byte[]> producer;
+    private static Producer<String, String> producer;
     private static Consumer consumer;
     private static FileQueueService fileQueueService;
 
@@ -25,12 +25,12 @@ public class FileQueueTest {
 
     @Test
     public void testPushToFile() throws ExecutionException, InterruptedException {
-        assertEquals(QueueServiceResponse.ResponseCode.RECORD_PRODUCED, producer.send(fileQueueService, null, MESSAGE.getBytes()).get().getResponseCode());
+        assertEquals(QueueServiceResponse.ResponseCode.RECORD_PRODUCED, producer.send(fileQueueService, null, MESSAGE).get().getResponseCode());
     }
 
-    //@Test
+    @Test
     public void testPullFromFile() throws ExecutionException, InterruptedException {
-        producer.send(fileQueueService, null, MESSAGE.getBytes()).get();
+        producer.send(fileQueueService, null, MESSAGE).get();
         assertEquals(MESSAGE, consumer.consume(fileQueueService).get().getQueueServiceRecord().getValue());
     }
 }

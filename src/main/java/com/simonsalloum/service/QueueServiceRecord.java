@@ -1,5 +1,7 @@
 package com.simonsalloum.service;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
 
 import javax.annotation.Nullable;
@@ -15,7 +17,7 @@ public class QueueServiceRecord<K, V> implements Serializable {
      * The key, of type T, of the QueueServiceRecord
      * @param <T>
      */
-    public class Key<T> implements Serializable {
+    static class Key<T> implements Serializable {
         private final T key;
 
         Key(T key) {
@@ -47,7 +49,8 @@ public class QueueServiceRecord<K, V> implements Serializable {
      * @param key the key to be stored in the queue, of type K or null if no key is specified
      * @param value the value, of type V, to be stored in the queue
      */
-    public QueueServiceRecord(K key, @Nullable V value) {
+    @JsonCreator
+    public QueueServiceRecord(@JsonProperty("key") K key, @Nullable @JsonProperty("value") V value) {
         this.key = new Key<>(key);
         this.value = value;
     }

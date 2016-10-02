@@ -52,7 +52,25 @@ class FileQueueService implements QueueService {
 
     @Override
     public synchronized QueueServiceResponse pull() {
+        try {
+            File tempFile = new File(file + ".tmp");
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
+            String firstLine = reader.readLine();
+            String currentLine;
+            while((currentLine = reader.readLine()) != null) {
+                writer.write(currentLine + System.lineSeparator());
+            }
 
+            writer.close();
+            reader.close();
+            tempFile.renameTo(file);
+            QueueServiceRecord record = MAPPER.readValue(firstLine, QueueServiceRecord.class);
+
+            return new QueueServiceResponse(QueueServiceResponse.ResponseCode.RECORD_FOUND, record);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
