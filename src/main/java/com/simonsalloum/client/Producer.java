@@ -4,7 +4,6 @@ import com.simonsalloum.service.QueueService;
 import com.simonsalloum.service.QueueServiceRecord;
 import com.simonsalloum.service.QueueServiceResponse;
 
-import javax.annotation.Nullable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
@@ -29,8 +28,7 @@ public class Producer<K, V> {
      * @return Future<QueueServiceResponse> a future with response from
      *         the queue, including a status code
      */
-    public Future<QueueServiceResponse> send(QueueService queue, @Nullable K key, V value) {
-        if (key == null) return CompletableFuture.supplyAsync(() -> queue.push(new QueueServiceRecord<>(value)));
-        else return CompletableFuture.supplyAsync(() -> queue.push(new QueueServiceRecord<>(key, value)));
+    public Future<QueueServiceResponse> send(QueueService queue, K key, V value) {
+        return CompletableFuture.supplyAsync(() -> queue.push(new QueueServiceRecord<>(key, value)));
     }
 }

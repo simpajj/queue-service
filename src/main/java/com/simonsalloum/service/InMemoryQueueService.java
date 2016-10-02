@@ -26,12 +26,12 @@ import java.util.logging.Logger;
  * @author simon.salloum
  **/
 
-public class InMemoryQueueService implements QueueService {
+class InMemoryQueueService implements QueueService {
 
     private static final Logger LOGGER = Logger.getLogger(InMemoryQueueService.class.getName());
     private static ConcurrentLinkedQueue<QueueServiceRecord> queue;
     private static Cache<QueueServiceRecord.Key, QueueServiceRecord> consumedMessages;
-    private RemovalListener<QueueServiceRecord.Key, QueueServiceRecord> removalListener = new RemovalListener<QueueServiceRecord.Key, QueueServiceRecord>() {
+    private final RemovalListener<QueueServiceRecord.Key, QueueServiceRecord> removalListener = new RemovalListener<QueueServiceRecord.Key, QueueServiceRecord>() {
         @Override
         public void onRemoval(RemovalNotification<QueueServiceRecord.Key, QueueServiceRecord> notification) {
             if (notification.getCause() == RemovalCause.EXPIRED) {

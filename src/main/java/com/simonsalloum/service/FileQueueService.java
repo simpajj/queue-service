@@ -38,20 +38,8 @@ class FileQueueService implements QueueService {
     private static Properties props;
     private static File file;
     private static Cache<QueueServiceRecord.Key, QueueServiceRecord> consumedMessages;
-    private RemovalListener<QueueServiceRecord.Key, QueueServiceRecord> removalListener = new RemovalListener<QueueServiceRecord.Key, QueueServiceRecord>() {
-        @Override
-        public void onRemoval(RemovalNotification<QueueServiceRecord.Key, QueueServiceRecord> notification) {
-            if (notification.getCause() == RemovalCause.EXPIRED) {
-                try {
-                    Files.append(MAPPER.writeValueAsString(notification.getValue()) + System.lineSeparator(), file, Charset.defaultCharset());
-                } catch (IOException e) {
-                    LOGGER.log(Level.WARNING, e.toString());
-                }
-            }
-        }
-    };
 
-    public FileQueueService() throws IOException {
+    FileQueueService() throws IOException {
         loadProperties();
 
         String filePath = props.getProperty("path");
@@ -61,6 +49,15 @@ class FileQueueService implements QueueService {
         } catch (IOException | SecurityException e) {
             LOGGER.log(Level.SEVERE, e.toString());
         }
+        RemovalListener<QueueServiceRecord.Key, QueueServiceRecord> removalListener = notification -> {
+            if (notification.getCause() == RemovalCause.EXPIRED) {
+                try {
+                    Files.append(MAPPER.writeValueAsString(notification.getValue()) + System.lineSeparator(), file, Charset.defaultCharset());
+                } catch (IOException e) {
+                    LOGGER.log(Level.WARNING, e.toString());
+                }
+            }
+        };
         consumedMessages = CacheBuilder.newBuilder().expireAfterWrite(30, TimeUnit.SECONDS).removalListener(removalListener).build();
     }
 

@@ -42,7 +42,7 @@ public class QueueServiceRecord<K, V> implements Serializable {
         }
     }
 
-    @Nullable private final Key<K> key;
+    private final Key<K> key;
     @Nullable private final V value;
 
     /**
@@ -55,12 +55,6 @@ public class QueueServiceRecord<K, V> implements Serializable {
         this.value = value;
     }
 
-    public QueueServiceRecord(@Nullable V value) {
-        this.key = null;
-        this.value = value;
-    }
-
-    @Nullable
     public Key<K> getKey() {
         return key;
     }
