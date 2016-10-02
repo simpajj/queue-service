@@ -1,15 +1,11 @@
 package com.simonsalloum.service;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.*;
 import java.nio.channels.FileChannel;
+import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,13 +23,15 @@ import java.util.logging.Logger;
  * @author simon.salloum
  **/
 
-public class FileQueueService implements QueueService {
+class FileQueueService implements QueueService {
 
     private static final Logger LOGGER = Logger.getLogger(InMemoryQueueService.class.getName());
+    private static final ObjectMapper MAPPER = new ObjectMapper();
     private static Properties props;
     private static File file;
-    private static ObjectMapper mapper;
-    private static JsonParser jsonParser;
+    private static FileChannel channel;
+    private static RandomAccessFile raf;
+    private Writer writer;
 
     public FileQueueService() throws IOException {
         loadProperties();
@@ -41,36 +39,26 @@ public class FileQueueService implements QueueService {
         String filePath = props.getProperty("path");
         file = new File(filePath);
         file.createNewFile();
-        mapper = new ObjectMapper();
-        JsonFactory jsonFactory = new JsonFactory();
-        jsonParser = jsonFactory.createParser(file);
+        raf = new RandomAccessFile(file, "rwd");
+        channel = raf.getChannel();
     }
 
     @Override
     public synchronized QueueServiceResponse push(QueueServiceRecord record) {
-        return writeToLogFile(record);
+        QueueServiceResponse response = writeToLogFile(record);
+        notify();
+        return response;
     }
 
     @Override
     public synchronized QueueServiceResponse pull() {
-        try {
-            MappingIterator<Object> values = mapper.readValues(jsonParser, Object.class);
-            ArrayList<Object> objects = new ArrayList<>();
-            while (values.hasNext()) {
-                objects.add(values.nextValue());
-            }
-            QueueServiceRecord record = new QueueServiceRecord<>(null, objects);
-            delete(record);
-            return new QueueServiceResponse(QueueServiceResponse.ResponseCode.RECORD_FOUND, record);
-        } catch (IOException e) {
-            return new QueueServiceResponse(QueueServiceResponse.ResponseCode.COULD_NOT_DESERIALIZE_OBJECT);
-        }
+
+        return null;
     }
 
     @Override
-    public void delete(QueueServiceRecord record) {
+    public synchronized void delete(QueueServiceRecord record) {
         try {
-            RandomAccessFile raf = new RandomAccessFile(file, "rw");
             raf.setLength(0);
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "Could not empty contents of file. Data duplication possible.");
@@ -79,8 +67,9 @@ public class FileQueueService implements QueueService {
 
     private QueueServiceResponse writeToLogFile(QueueServiceRecord record) {
         try {
-            final byte[] bytesToWrite = mapper.writeValueAsBytes(record.getValue());
-            Files.write(file.toPath(), bytesToWrite, StandardOpenOption.APPEND);
+            writer = new BufferedWriter(new FileWriter(file));
+            writer.append(MAPPER.writeValueAsString(record));
+            writer.close();
             return new QueueServiceResponse(QueueServiceResponse.ResponseCode.RECORD_PRODUCED, record);
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, e.toString());

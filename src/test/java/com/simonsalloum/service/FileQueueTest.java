@@ -6,11 +6,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
+import static org.junit.Assert.assertEquals;
+
 public class FileQueueTest {
-    private static Producer<UUID, String> producer;
+    private static final String MESSAGE = "hi";
+    private static Producer<String, byte[]> producer;
     private static Consumer consumer;
     private static FileQueueService fileQueueService;
 
@@ -21,16 +23,14 @@ public class FileQueueTest {
         fileQueueService = new FileQueueService();
     }
 
-    // TODO: cleanup
     @Test
     public void testPushToFile() throws ExecutionException, InterruptedException {
-        String hej = "lolul";
-        String hej2 = "hej";
-        producer.send(fileQueueService, UUID.randomUUID(), hej).get();
-        producer.send(fileQueueService, UUID.randomUUID(), hej2).get();
+        assertEquals(QueueServiceResponse.ResponseCode.RECORD_PRODUCED, producer.send(fileQueueService, null, MESSAGE.getBytes()).get().getResponseCode());
+    }
 
-        QueueServiceResponse response = fileQueueService.pull();
-        System.out.println(response.getQueueServiceRecord());
-        System.out.println(response.getQueueServiceRecord().getValue());
+    //@Test
+    public void testPullFromFile() throws ExecutionException, InterruptedException {
+        producer.send(fileQueueService, null, MESSAGE.getBytes()).get();
+        assertEquals(MESSAGE, consumer.consume(fileQueueService).get().getQueueServiceRecord().getValue());
     }
 }

@@ -2,19 +2,18 @@ package com.simonsalloum.service;
 
 
 import javax.annotation.Nullable;
+import java.io.Serializable;
 
 /**
  * An immutable response specific to the {@link QueueService} interface.
  */
-public class QueueServiceResponse {
-    public enum ResponseCode {
+public class QueueServiceResponse implements Serializable {
+    public enum ResponseCode implements Serializable {
         COULD_NOT_DESERIALIZE_OBJECT,
         COULD_NOT_WRITE_FILE,
-        FILE_NOT_FOUND,
         QUEUE_EMPTY,
         QUEUE_FULL,
         RECORD_FOUND,
-        RECORD_NOT_SERIALIZABLE,
         RECORD_PRODUCED,
         RECORD_WAS_NULL;
 

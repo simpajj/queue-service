@@ -3,18 +3,19 @@ package com.simonsalloum.service;
 import com.google.common.base.Objects;
 
 import javax.annotation.Nullable;
+import java.io.Serializable;
 
 /**
  * An immutable record specific to the {@link InMemoryQueueService}
  * implementation of the {@link QueueService} interface.
  */
-public class QueueServiceRecord<K, V> {
+public class QueueServiceRecord<K, V> implements Serializable {
 
     /**
      * The key, of type T, of the QueueServiceRecord
      * @param <T>
      */
-    public class Key<T> {
+    public class Key<T> implements Serializable {
         private final T key;
 
         Key(T key) {
@@ -39,7 +40,7 @@ public class QueueServiceRecord<K, V> {
         }
     }
 
-    private final Key<K> key;
+    @Nullable private final Key<K> key;
     @Nullable private final V value;
 
     /**
@@ -51,6 +52,12 @@ public class QueueServiceRecord<K, V> {
         this.value = value;
     }
 
+    public QueueServiceRecord(@Nullable V value) {
+        this.key = null;
+        this.value = value;
+    }
+
+    @Nullable
     public Key<K> getKey() {
         return key;
     }

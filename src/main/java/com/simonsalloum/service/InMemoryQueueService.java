@@ -1,5 +1,6 @@
 package com.simonsalloum.service;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Ticker;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -26,7 +27,7 @@ import java.util.logging.Logger;
  * @author simon.salloum
  **/
 
-public class InMemoryQueueService implements QueueService {
+class InMemoryQueueService implements QueueService {
 
     private static final Logger LOGGER = Logger.getLogger(InMemoryQueueService.class.getName());
     private static ConcurrentLinkedQueue<QueueServiceRecord> queue;
@@ -85,10 +86,12 @@ public class InMemoryQueueService implements QueueService {
         consumedMessages.invalidate(queueServiceRecord.getKey());
     }
 
+    @VisibleForTesting
     int size() {
         return queue.size();
     }
 
+    @VisibleForTesting
     long consumedMessages() {
         consumedMessages.cleanUp();
         return consumedMessages.size();
