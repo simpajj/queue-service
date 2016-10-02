@@ -52,7 +52,8 @@ class FileQueueService implements QueueService {
         try {
             file.createNewFile();
         } catch (IOException | SecurityException e) {
-            LOGGER.log(Level.SEVERE, e.toString());
+            LOGGER.log(Level.SEVERE, "Could not create file at path: " + filePath +
+                    "\n Make sure to set the path in config/config.properties");
         }
         RemovalListener<QueueServiceRecord.Key, QueueServiceRecord> removalListener = notification -> {
             if (notification.getCause() == RemovalCause.EXPIRED) {
@@ -155,11 +156,11 @@ class FileQueueService implements QueueService {
 
     @VisibleForTesting
     void deleteFileContents() {
-        file.delete();
+        if (file.exists()) file.delete();
         try {
             file.createNewFile();
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.WARNING, "Could not create file");
         }
     }
 }

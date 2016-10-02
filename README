@@ -5,5 +5,6 @@ A Java-based interface for queue implementations, along with two implementations
 	- Uses a com.google.common.cache.Cache for intermediate storage of consumed messages and automatic eviction
 
 2. File-based implementation: 
-	- The file path is specified in config/config.properties as the ”path” property. 
+	PRE-REQUIREMENTS: set the file path in config/config.properties
+	- The file path is specified in config/config.properties as the ”path” property and is used by the unit tests
 	- Uses a com.google.common.cache.Cache for intermediate storage of consumed messages and automatic eviction
