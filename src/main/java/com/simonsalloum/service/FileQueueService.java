@@ -1,11 +1,13 @@
 package com.simonsalloum.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.cache.*;
 import com.google.common.io.Files;
 
 import java.io.*;
 import java.nio.charset.Charset;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -18,7 +20,9 @@ import java.util.logging.Logger;
  * and {@link com.fasterxml.jackson.annotation.JsonProperty} annotations.
  *
  * The queue file location is specified via a configuration file and read
- * at queue construction.
+ * at queue construction. It uses a {@link Cache} as an intermediate in-memory
+ * storage for consumed messages. Consumed messages are either evicted by the
+ * consumer or forcibly re-added to the queue file if expired.
  *
  * The implementation is designed to be used with the non-blocking client
  * implementations {@link com.simonsalloum.client.Producer} and
@@ -33,6 +37,19 @@ class FileQueueService implements QueueService {
     private static final ObjectMapper MAPPER = new ObjectMapper();
     private static Properties props;
     private static File file;
+    private static Cache<QueueServiceRecord.Key, QueueServiceRecord> consumedMessages;
+    private RemovalListener<QueueServiceRecord.Key, QueueServiceRecord> removalListener = new RemovalListener<QueueServiceRecord.Key, QueueServiceRecord>() {
+        @Override
+        public void onRemoval(RemovalNotification<QueueServiceRecord.Key, QueueServiceRecord> notification) {
+            if (notification.getCause() == RemovalCause.EXPIRED) {
+                try {
+                    Files.append(MAPPER.writeValueAsString(notification.getValue()) + System.lineSeparator(), file, Charset.defaultCharset());
+                } catch (IOException e) {
+                    LOGGER.log(Level.WARNING, e.toString());
+                }
+            }
+        }
+    };
 
     public FileQueueService() throws IOException {
         loadProperties();
@@ -44,6 +61,7 @@ class FileQueueService implements QueueService {
         } catch (IOException | SecurityException e) {
             LOGGER.log(Level.SEVERE, e.toString());
         }
+        consumedMessages = CacheBuilder.newBuilder().expireAfterWrite(30, TimeUnit.SECONDS).removalListener(removalListener).build();
     }
 
     /**
@@ -69,16 +87,14 @@ class FileQueueService implements QueueService {
         return response;
     }
 
+    /**
+     * Deletes a received record from the intermediate storage
+     * @param record the record of type {@link QueueServiceRecord} to delete from the intermediate storage
+     */
     @Override
     public synchronized void delete(QueueServiceRecord record) {
-        try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-            writer.close();
-            notify();
-        } catch (IOException e) {
-            notify();
-            LOGGER.log(Level.WARNING, e.toString());
-        }
+        LOGGER.log(Level.FINE, "Removing queueServiceRecord: " + record.getKey());
+        consumedMessages.invalidate(record.getKey());
     }
 
     private QueueServiceResponse readFromLogFile() {
@@ -89,7 +105,7 @@ class FileQueueService implements QueueService {
             String firstLine = reader.readLine();
             String currentLine;
             while((currentLine = reader.readLine()) != null) {
-                tempFileWriter .write(currentLine + System.lineSeparator());
+                tempFileWriter.write(currentLine + System.lineSeparator());
             }
 
             tempFileWriter.close();
@@ -97,6 +113,7 @@ class FileQueueService implements QueueService {
             tempFile.renameTo(file);
             if (firstLine != null) {
                 QueueServiceRecord record = MAPPER.readValue(firstLine, QueueServiceRecord.class);
+                consumedMessages.put(record.getKey(), record);
                 return new QueueServiceResponse(QueueServiceResponse.ResponseCode.RECORD_FOUND, record);
             }
             else return new QueueServiceResponse(QueueServiceResponse.ResponseCode.COULD_NOT_DESERIALIZE_RECORD);

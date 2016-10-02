@@ -33,12 +33,4 @@ public class FileQueueTest {
         producer.send(fileQueueService, null, MESSAGE).get();
         assertEquals(MESSAGE, consumer.consume(fileQueueService).get().getQueueServiceRecord().getValue());
     }
-
-    @Test
-    public void testPullFromEmptyFile() throws ExecutionException, InterruptedException {
-        producer.send(fileQueueService, null, MESSAGE).get();
-        fileQueueService.delete(null);
-        assertEquals(QueueServiceResponse.ResponseCode.COULD_NOT_DESERIALIZE_RECORD, consumer.consume(fileQueueService).get().getResponseCode());
-
-    }
 }
