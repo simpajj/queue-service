@@ -1,9 +1,11 @@
 package com.simonsalloum.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.io.Files;
 
 import java.io.*;
 import java.nio.channels.FileChannel;
+import java.nio.charset.Charset;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -82,9 +84,7 @@ class FileQueueService implements QueueService {
 
     private QueueServiceResponse writeToLogFile(QueueServiceRecord record) {
         try {
-            writer = new BufferedWriter(new FileWriter(file));
-            writer.append(MAPPER.writeValueAsString(record));
-            writer.close();
+            Files.append(MAPPER.writeValueAsString(record) + System.lineSeparator(), file, Charset.defaultCharset());
             return new QueueServiceResponse(QueueServiceResponse.ResponseCode.RECORD_PRODUCED, record);
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, e.toString());

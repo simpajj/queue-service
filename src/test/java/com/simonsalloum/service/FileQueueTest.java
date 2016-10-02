@@ -33,4 +33,12 @@ public class FileQueueTest {
         producer.send(fileQueueService, null, MESSAGE).get();
         assertEquals(MESSAGE, consumer.consume(fileQueueService).get().getQueueServiceRecord().getValue());
     }
+
+    @Test
+    public void pushABunch() throws ExecutionException, InterruptedException {
+        producer.send(fileQueueService, null, MESSAGE).get();
+        producer.send(fileQueueService, null, MESSAGE).get();
+        producer.send(fileQueueService, null, MESSAGE).get();
+
+    }
 }
