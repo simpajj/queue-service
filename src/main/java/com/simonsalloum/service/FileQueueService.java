@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Files;
 
 import java.io.*;
-import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -12,9 +11,14 @@ import java.util.logging.Logger;
 
 /**
  * A file based FIFO queue implementation of the {@link QueueService}
- * interface. The implementation uses a {@link FileChannel} to write
- * serialized {@link QueueServiceRecord}s to a file. The file location
- * is specified via a configuration file and read at construction.
+ * interface. The implementation uses {@link Files} to append serialized
+ * {@link QueueServiceRecord}s to a file. The serialization is handled
+ * by {@link ObjectMapper}, and thus requires that serialized objects are
+ * deserializable, e.g. via the {@link com.fasterxml.jackson.annotation.JsonCreator}
+ * and {@link com.fasterxml.jackson.annotation.JsonProperty} annotations.
+ *
+ * The queue file location is specified via a configuration file and read
+ * at queue construction.
  *
  * The implementation is designed to be used with the non-blocking client
  * implementations {@link com.simonsalloum.client.Producer} and
@@ -29,20 +33,24 @@ class FileQueueService implements QueueService {
     private static final ObjectMapper MAPPER = new ObjectMapper();
     private static Properties props;
     private static File file;
-    private static FileChannel channel;
-    private static RandomAccessFile raf;
-    private Writer writer;
 
     public FileQueueService() throws IOException {
         loadProperties();
 
         String filePath = props.getProperty("path");
         file = new File(filePath);
-        file.createNewFile();
-        raf = new RandomAccessFile(file, "rwd");
-        channel = raf.getChannel();
+        try {
+            file.createNewFile();
+        } catch (IOException | SecurityException e) {
+            LOGGER.log(Level.SEVERE, e.toString());
+        }
     }
 
+    /**
+     * Appends a single record into the file based queue
+     * @param record the record to push onto the queue
+     * @return a {@link QueueServiceResponse}
+     */
     @Override
     public synchronized QueueServiceResponse push(QueueServiceRecord record) {
         QueueServiceResponse response = writeToLogFile(record);
@@ -50,35 +58,51 @@ class FileQueueService implements QueueService {
         return response;
     }
 
+    /**
+     * Removes and returns the first message in the queue
+     * @return A {@link QueueServiceResponse} that may include a {@link QueueServiceRecord}
+     */
     @Override
     public synchronized QueueServiceResponse pull() {
-        try {
-            File tempFile = new File(file + ".tmp");
-            BufferedReader reader = new BufferedReader(new FileReader(file));
-            BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
-            String firstLine = reader.readLine();
-            String currentLine;
-            while((currentLine = reader.readLine()) != null) {
-                writer.write(currentLine + System.lineSeparator());
-            }
-
-            writer.close();
-            reader.close();
-            tempFile.renameTo(file);
-            QueueServiceRecord record = MAPPER.readValue(firstLine, QueueServiceRecord.class);
-
-            return new QueueServiceResponse(QueueServiceResponse.ResponseCode.RECORD_FOUND, record);
-        } catch (IOException e) {
-            return new QueueServiceResponse(QueueServiceResponse.ResponseCode.COULD_NOT_DESERIALIZE_RECORD);
-        }
+        QueueServiceResponse response = readFromLogFile();
+        notify();
+        return response;
     }
 
     @Override
     public synchronized void delete(QueueServiceRecord record) {
         try {
-            raf.setLength(0);
+            BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+            writer.close();
+            notify();
         } catch (IOException e) {
-            LOGGER.log(Level.WARNING, "Could not empty contents of file. Data duplication possible.");
+            notify();
+            LOGGER.log(Level.WARNING, e.toString());
+        }
+    }
+
+    private QueueServiceResponse readFromLogFile() {
+        try {
+            File tempFile = new File(file + ".tmp");
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            BufferedWriter tempFileWriter = new BufferedWriter(new FileWriter(tempFile));
+            String firstLine = reader.readLine();
+            String currentLine;
+            while((currentLine = reader.readLine()) != null) {
+                tempFileWriter .write(currentLine + System.lineSeparator());
+            }
+
+            tempFileWriter.close();
+            reader.close();
+            tempFile.renameTo(file);
+            if (firstLine != null) {
+                QueueServiceRecord record = MAPPER.readValue(firstLine, QueueServiceRecord.class);
+                return new QueueServiceResponse(QueueServiceResponse.ResponseCode.RECORD_FOUND, record);
+            }
+            else return new QueueServiceResponse(QueueServiceResponse.ResponseCode.COULD_NOT_DESERIALIZE_RECORD);
+        } catch (IOException e) {
+            LOGGER.log(Level.WARNING, e.toString());
+            return new QueueServiceResponse(QueueServiceResponse.ResponseCode.COULD_NOT_DESERIALIZE_RECORD);
         }
     }
 

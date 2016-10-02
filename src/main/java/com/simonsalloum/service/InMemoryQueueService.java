@@ -2,8 +2,7 @@ package com.simonsalloum.service;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Ticker;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.*;
 
 import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -27,11 +26,19 @@ import java.util.logging.Logger;
  * @author simon.salloum
  **/
 
-class InMemoryQueueService implements QueueService {
+public class InMemoryQueueService implements QueueService {
 
     private static final Logger LOGGER = Logger.getLogger(InMemoryQueueService.class.getName());
     private static ConcurrentLinkedQueue<QueueServiceRecord> queue;
     private static Cache<QueueServiceRecord.Key, QueueServiceRecord> consumedMessages;
+    private RemovalListener<QueueServiceRecord.Key, QueueServiceRecord> removalListener = new RemovalListener<QueueServiceRecord.Key, QueueServiceRecord>() {
+        @Override
+        public void onRemoval(RemovalNotification<QueueServiceRecord.Key, QueueServiceRecord> notification) {
+            if (notification.getCause() == RemovalCause.EXPIRED) {
+                queue.add(notification.getValue());
+            }
+        }
+    };
 
     /**
      * Used to override the default cache eviction time of 30s.
@@ -41,7 +48,7 @@ class InMemoryQueueService implements QueueService {
      */
     InMemoryQueueService(int evictionTime, TimeUnit timeUnit, Ticker ticker) {
         queue = new ConcurrentLinkedQueue<>();
-        consumedMessages = CacheBuilder.newBuilder().ticker(ticker).expireAfterWrite(evictionTime, timeUnit).build();
+        consumedMessages = CacheBuilder.newBuilder().ticker(ticker).expireAfterWrite(evictionTime, timeUnit).removalListener(removalListener).build();
     }
 
     /**
@@ -49,7 +56,7 @@ class InMemoryQueueService implements QueueService {
      */
     InMemoryQueueService() {
         queue = new ConcurrentLinkedQueue<>();
-        consumedMessages = CacheBuilder.newBuilder().expireAfterWrite(30, TimeUnit.SECONDS).build();
+        consumedMessages = CacheBuilder.newBuilder().expireAfterWrite(30, TimeUnit.SECONDS).removalListener(removalListener).build();
     }
 
     @Override

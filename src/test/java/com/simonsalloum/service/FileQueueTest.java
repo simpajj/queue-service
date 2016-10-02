@@ -35,10 +35,10 @@ public class FileQueueTest {
     }
 
     @Test
-    public void pushABunch() throws ExecutionException, InterruptedException {
+    public void testPullFromEmptyFile() throws ExecutionException, InterruptedException {
         producer.send(fileQueueService, null, MESSAGE).get();
-        producer.send(fileQueueService, null, MESSAGE).get();
-        producer.send(fileQueueService, null, MESSAGE).get();
+        fileQueueService.delete(null);
+        assertEquals(QueueServiceResponse.ResponseCode.COULD_NOT_DESERIALIZE_RECORD, consumer.consume(fileQueueService).get().getResponseCode());
 
     }
 }
