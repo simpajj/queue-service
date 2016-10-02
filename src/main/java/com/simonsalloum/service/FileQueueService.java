@@ -14,10 +14,14 @@ import java.util.logging.Logger;
 /**
  * A file based FIFO queue implementation of the {@link QueueService}
  * interface. The implementation uses {@link Files} to append serialized
- * {@link QueueServiceRecord}s to a file. The serialization is handled
- * by {@link ObjectMapper}, and thus requires that serialized objects are
- * deserializable, e.g. via the {@link com.fasterxml.jackson.annotation.JsonCreator}
+ * {@link QueueServiceRecord}s to a file.
+ *
+ * The serialization is handled by {@link ObjectMapper}, and thus requires
+ * that serialized objects are deserializable, e.g. via the
+ * {@link com.fasterxml.jackson.annotation.JsonCreator}
  * and {@link com.fasterxml.jackson.annotation.JsonProperty} annotations.
+ * Any inner classes must either be declared static or provide a default
+ * constructor with appropriate getter and setter methods.
  *
  * The queue file location is specified via a configuration file and read
  * at queue construction. It uses a {@link Cache} as an intermediate in-memory
