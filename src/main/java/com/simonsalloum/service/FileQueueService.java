@@ -4,8 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.*;
 import java.nio.channels.FileChannel;
-import java.nio.channels.SeekableByteChannel;
-import java.nio.file.Files;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -69,9 +67,8 @@ class FileQueueService implements QueueService {
 
             return new QueueServiceResponse(QueueServiceResponse.ResponseCode.RECORD_FOUND, record);
         } catch (IOException e) {
-            e.printStackTrace();
+            return new QueueServiceResponse(QueueServiceResponse.ResponseCode.COULD_NOT_DESERIALIZE_RECORD);
         }
-        return null;
     }
 
     @Override

@@ -9,7 +9,7 @@ import java.io.Serializable;
  */
 public class QueueServiceResponse implements Serializable {
     public enum ResponseCode implements Serializable {
-        COULD_NOT_DESERIALIZE_OBJECT,
+        COULD_NOT_DESERIALIZE_RECORD,
         COULD_NOT_WRITE_FILE,
         QUEUE_EMPTY,
         QUEUE_FULL,
