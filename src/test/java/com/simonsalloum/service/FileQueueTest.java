@@ -25,12 +25,38 @@ public class FileQueueTest {
 
     @Test
     public void testPushToFile() throws ExecutionException, InterruptedException {
+        fileQueueService.deleteFileContents();
         assertEquals(QueueServiceResponse.ResponseCode.RECORD_PRODUCED, producer.send(fileQueueService, null, MESSAGE).get().getResponseCode());
     }
 
     @Test
     public void testPullFromFile() throws ExecutionException, InterruptedException {
+        fileQueueService.deleteFileContents();
         producer.send(fileQueueService, null, MESSAGE).get();
         assertEquals(MESSAGE, consumer.consume(fileQueueService).get().getQueueServiceRecord().getValue());
+    }
+
+    @Test
+    public void testDeleteFromFile() throws ExecutionException, InterruptedException {
+        fileQueueService.deleteFileContents();
+        producer.send(fileQueueService, null, MESSAGE).get();
+        assertEquals(MESSAGE, consumer.consume(fileQueueService).get().getQueueServiceRecord().getValue());
+        assertEquals(0, fileQueueService.getFileSize());
+    }
+
+    @Test
+    public void testAddToConsumedMessagesCache() throws ExecutionException, InterruptedException {
+        fileQueueService.deleteFileContents();
+        producer.send(fileQueueService, null, MESSAGE).get();
+        fileQueueService.pull();
+        assertEquals(1, fileQueueService.getConsumedMessagesSize());
+    }
+
+    @Test
+    public void testRemoveFromConsumedMessagesCache() throws ExecutionException, InterruptedException {
+        fileQueueService.deleteFileContents();
+        producer.send(fileQueueService, null, MESSAGE).get();
+        assertEquals(MESSAGE, consumer.consume(fileQueueService).get().getQueueServiceRecord().getValue());
+        assertEquals(0, fileQueueService.getConsumedMessagesSize());
     }
 }

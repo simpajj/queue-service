@@ -36,7 +36,7 @@ public class InMemoryQueueTest {
         Future<QueueServiceResponse> response = producerOne.send(inMemoryQueueService, KEY, VALUE);
 
         assertEquals(QueueServiceResponse.ResponseCode.RECORD_PRODUCED, response.get().getResponseCode());
-        assertEquals(1, inMemoryQueueService.size());
+        assertEquals(1, inMemoryQueueService.getQueueSize());
     }
 
     @Test
@@ -48,7 +48,7 @@ public class InMemoryQueueTest {
         for (Future<QueueServiceResponse> response : responses) {
             assertEquals(QueueServiceResponse.ResponseCode.RECORD_PRODUCED, response.get().getResponseCode());
         }
-        assertEquals(2, inMemoryQueueService.size());
+        assertEquals(2, inMemoryQueueService.getQueueSize());
     }
 
     @Test
@@ -62,7 +62,7 @@ public class InMemoryQueueTest {
         for(Future<QueueServiceResponse> response : responses) {
             assertEquals(QueueServiceResponse.ResponseCode.RECORD_PRODUCED, response.get().getResponseCode());
         }
-        assertEquals(20, inMemoryQueueService.size());
+        assertEquals(20, inMemoryQueueService.getQueueSize());
     }
 
     @Test
@@ -89,7 +89,7 @@ public class InMemoryQueueTest {
         inMemoryQueueService.push(record);
         inMemoryQueueService.push(record);
 
-        assertEquals(2, inMemoryQueueService.size());
+        assertEquals(2, inMemoryQueueService.getQueueSize());
     }
 
     @Test
@@ -99,7 +99,7 @@ public class InMemoryQueueTest {
 
         inMemoryQueueService.push(record);
         inMemoryQueueService.push(record2);
-        assertEquals(2, inMemoryQueueService.size());
+        assertEquals(2, inMemoryQueueService.getQueueSize());
     }
 
     @Test
@@ -107,7 +107,7 @@ public class InMemoryQueueTest {
         InMemoryQueueService queueService2 = new InMemoryQueueService();
         Future<QueueServiceResponse> response = producerOne.send(inMemoryQueueService, KEY, VALUE);
         response.get();
-        assertEquals(1, queueService2.size());
+        assertEquals(1, queueService2.getQueueSize());
     }
 
     @Test
@@ -133,14 +133,14 @@ public class InMemoryQueueTest {
         QueueServiceRecord queueServiceRecord = new QueueServiceRecord<>(KEY, VALUE);
 
         inMemoryQueueService.push(queueServiceRecord);
-        assertEquals(1, inMemoryQueueService.size());
+        assertEquals(1, inMemoryQueueService.getQueueSize());
 
         QueueServiceResponse res = inMemoryQueueService.pull();
-        assertEquals(0, inMemoryQueueService.size());
-        assertEquals(1, inMemoryQueueService.consumedMessages());
+        assertEquals(0, inMemoryQueueService.getQueueSize());
+        assertEquals(1, inMemoryQueueService.getConsumedMessagesSize());
 
         inMemoryQueueService.delete(res.getQueueServiceRecord());
-        assertEquals(0, inMemoryQueueService.consumedMessages());
+        assertEquals(0, inMemoryQueueService.getConsumedMessagesSize());
     }
 
     @Test
@@ -150,15 +150,15 @@ public class InMemoryQueueTest {
         QueueServiceRecord queueServiceRecord = new QueueServiceRecord<>(KEY, VALUE);
 
         queueService.push(queueServiceRecord);
-        assertEquals(1, queueService.size());
+        assertEquals(1, queueService.getQueueSize());
 
         queueService.pull();
         ticker.advance(1, TimeUnit.SECONDS);
-        assertEquals(0, queueService.size());
-        assertEquals(1, queueService.consumedMessages());
+        assertEquals(0, queueService.getQueueSize());
+        assertEquals(1, queueService.getConsumedMessagesSize());
 
         ticker.advance(2, TimeUnit.SECONDS);
-        assertEquals(0, queueService.consumedMessages());
+        assertEquals(0, queueService.getConsumedMessagesSize());
     }
 
     @Test
@@ -168,6 +168,6 @@ public class InMemoryQueueTest {
         inMemoryQueueService.push(record);
 
         inMemoryQueueService.pull();
-        assertEquals(1, inMemoryQueueService.size());
+        assertEquals(1, inMemoryQueueService.getQueueSize());
     }
 }

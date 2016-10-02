@@ -1,6 +1,7 @@
 package com.simonsalloum.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.cache.*;
 import com.google.common.io.Files;
 
@@ -139,5 +140,26 @@ class FileQueueService implements QueueService {
         InputStream in = new FileInputStream("config/config.properties");
         props.load(in);
         in.close();
+    }
+
+    @VisibleForTesting
+    long getFileSize() {
+        return file.length();
+    }
+
+    @VisibleForTesting
+    long getConsumedMessagesSize() {
+        consumedMessages.cleanUp();
+        return consumedMessages.size();
+    }
+
+    @VisibleForTesting
+    void deleteFileContents() {
+        file.delete();
+        try {
+            file.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

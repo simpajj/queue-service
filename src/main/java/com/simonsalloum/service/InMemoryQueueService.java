@@ -4,6 +4,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Ticker;
 import com.google.common.cache.*;
 
+import javax.annotation.Nullable;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
@@ -42,13 +43,14 @@ class InMemoryQueueService implements QueueService {
 
     /**
      * Used to override the default cache eviction time of 30s.
-     * @param evictionTime the maximum time that an entry can be in the consumedMessages cache
+     * @param evictionTime the maximum time that an entry can be in the getConsumedMessagesSize cache
      *                     before being evicted
      * @param timeUnit the {@link TimeUnit} of the evictionTime parameter
      */
-    InMemoryQueueService(int evictionTime, TimeUnit timeUnit, Ticker ticker) {
+    InMemoryQueueService(int evictionTime, TimeUnit timeUnit, @Nullable Ticker ticker) {
         queue = new ConcurrentLinkedQueue<>();
-        consumedMessages = CacheBuilder.newBuilder().ticker(ticker).expireAfterWrite(evictionTime, timeUnit).removalListener(removalListener).build();
+        if (ticker == null) consumedMessages = CacheBuilder.newBuilder().expireAfterWrite(evictionTime, timeUnit).removalListener(removalListener).build();
+        else consumedMessages = CacheBuilder.newBuilder().ticker(ticker).expireAfterWrite(evictionTime, timeUnit).removalListener(removalListener).build();
     }
 
     /**
@@ -94,12 +96,12 @@ class InMemoryQueueService implements QueueService {
     }
 
     @VisibleForTesting
-    int size() {
+    int getQueueSize() {
         return queue.size();
     }
 
     @VisibleForTesting
-    long consumedMessages() {
+    long getConsumedMessagesSize() {
         consumedMessages.cleanUp();
         return consumedMessages.size();
     }
